@@ -1,0 +1,9 @@
+{
+	"name": "uefi-d",
+	"description": "Bindings for UEFI API (Based on EDK2 2015)",
+	"copyright": "Copyright © 2016, Jakub Szewczyk",
+	"authors": ["Jakub Szewczyk"],
+	"dependencies": {
+	},
+	"targetType": "sourceLibrary"
+}
