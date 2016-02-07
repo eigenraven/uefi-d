@@ -19,7 +19,7 @@
 **/
 module uefi.base;
 
-import uefi.bind;
+public import uefi.bind;
 
 public:
 extern (C):

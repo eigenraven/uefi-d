@@ -11,3 +11,10 @@ public import uefi.base;
 public import uefi.base_type;
 
 public import uefi.gpt;
+
+public import uefi.protocols.devicepath;
+public import uefi.protocols.simpletextin;
+public import uefi.protocols.simpletextout;
+public import uefi.protocols.graphicsoutput;
+
+public import uefi.spec;

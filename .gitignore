@@ -8,3 +8,4 @@ dub.selections.json
 *.lib
 *.dll
 *.so
+tools/efihdrtool
