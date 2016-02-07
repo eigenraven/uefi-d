@@ -2,6 +2,9 @@
 	Based on Uefi/UefiBaseType.h file, original notice:
 
 	Defines data types and constants introduced in UEFI.
+	
+	Also based on Uefi/UefiMultiPhase.h file, original notice:
+	This includes some definitions introduced in UEFI that will be used in both PEI and DXE phases.
 
 	Copyright (c) 2006 - 2015, Intel Corporation. All rights reserved.
 	This program and the accompanying materials
@@ -260,3 +263,169 @@ enum EFI_IMAGE_MACHINE_ARMTHUMB_MIXED = 0x01C2;
 /// PE32+ Machine type for AARCH64 A64 images.
 ///
 enum EFI_IMAGE_MACHINE_AARCH64 = 0xAA64;
+
+//  UEFI Multi Phase
+
+alias EFI_MEMORY_TYPE = UINT32;
+///
+/// Enumeration of memory types introduced in UEFI.
+///
+enum : EFI_MEMORY_TYPE
+{
+    ///
+    /// Not used.
+    ///
+    EfiReservedMemoryType,
+    ///
+    /// The code portions of a loaded application.
+    /// (Note that UEFI OS loaders are UEFI applications.)
+    ///
+    EfiLoaderCode,
+    ///
+    /// The data portions of a loaded application and the default data allocation
+    /// type used by an application to allocate pool memory.
+    ///
+    EfiLoaderData,
+    ///
+    /// The code portions of a loaded Boot Services Driver.
+    ///
+    EfiBootServicesCode,
+    ///
+    /// The data portions of a loaded Boot Serves Driver, and the default data
+    /// allocation type used by a Boot Services Driver to allocate pool memory.
+    ///
+    EfiBootServicesData,
+    ///
+    /// The code portions of a loaded Runtime Services Driver.
+    ///
+    EfiRuntimeServicesCode,
+    ///
+    /// The data portions of a loaded Runtime Services Driver and the default
+    /// data allocation type used by a Runtime Services Driver to allocate pool memory.
+    ///
+    EfiRuntimeServicesData,
+    ///
+    /// Free (unallocated) memory.
+    ///
+    EfiConventionalMemory,
+    ///
+    /// Memory in which errors have been detected.
+    ///
+    EfiUnusableMemory,
+    ///
+    /// Memory that holds the ACPI tables.
+    ///
+    EfiACPIReclaimMemory,
+    ///
+    /// Address space reserved for use by the firmware.
+    ///
+    EfiACPIMemoryNVS,
+    ///
+    /// Used by system firmware to request that a memory-mapped IO region
+    /// be mapped by the OS to a virtual address so it can be accessed by EFI runtime services.
+    ///
+    EfiMemoryMappedIO,
+    ///
+    /// System memory-mapped IO region that is used to translate memory
+    /// cycles to IO cycles by the processor.
+    ///
+    EfiMemoryMappedIOPortSpace,
+    ///
+    /// Address space reserved by the firmware for code that is part of the processor.
+    ///
+    EfiPalCode,
+    ///
+    /// A memory region that operates as EfiConventionalMemory, 
+    /// however it happens to also support byte-addressable non-volatility.
+    ///
+    EfiPersistentMemory,
+    EfiMaxMemoryType
+}
+
+alias EFI_RESET_TYPE = UINT32;
+///
+/// Enumeration of reset types.
+///
+enum : EFI_RESET_TYPE
+{
+    ///
+    /// Used to induce a system-wide reset. This sets all circuitry within the
+    /// system to its initial state.  This type of reset is asynchronous to system
+    /// operation and operates withgout regard to cycle boundaries.  EfiColdReset
+    /// is tantamount to a system power cycle.
+    ///
+    EfiResetCold,
+    ///
+    /// Used to induce a system-wide initialization. The processors are set to their
+    /// initial state, and pending cycles are not corrupted.  If the system does
+    /// not support this reset type, then an EfiResetCold must be performed.
+    ///
+    EfiResetWarm,
+    ///
+    /// Used to induce an entry into a power state equivalent to the ACPI G2/S5 or G3
+    /// state.  If the system does not support this reset type, then when the system
+    /// is rebooted, it should exhibit the EfiResetCold attributes.
+    ///
+    EfiResetShutdown,
+    ///
+    /// Used to induce a system-wide reset. The exact type of the reset is defined by
+    /// the EFI_GUID that follows the Null-terminated Unicode string passed into
+    /// ResetData. If the platform does not recognize the EFI_GUID in ResetData the
+    /// platform must pick a supported reset type to perform. The platform may
+    /// optionally log the parameters from any non-normal reset that occurs.
+    ///
+    EfiResetPlatformSpecific
+}
+
+///
+/// Data structure that precedes all of the standard EFI table types.
+///
+struct EFI_TABLE_HEADER
+{
+    ///
+    /// A 64-bit signature that identifies the type of table that follows.
+    /// Unique signatures have been generated for the EFI System Table,
+    /// the EFI Boot Services Table, and the EFI Runtime Services Table.
+    ///
+    UINT64 Signature;
+    ///
+    /// The revision of the EFI Specification to which this table
+    /// conforms. The upper 16 bits of this field contain the major
+    /// revision value, and the lower 16 bits contain the minor revision
+    /// value. The minor revision values are limited to the range of 00..99.
+    ///
+    UINT32 Revision;
+    ///
+    /// The size, in bytes, of the entire table including the EFI_TABLE_HEADER.
+    ///
+    UINT32 HeaderSize;
+    ///
+    /// The 32-bit CRC for the entire table. This value is computed by
+    /// setting this field to 0, and computing the 32-bit CRC for HeaderSize bytes.
+    ///
+    UINT32 CRC32;
+    ///
+    /// Reserved field that must be set to 0.
+    ///
+    UINT32 Reserved;
+}
+
+///
+/// Attributes of variable.
+///
+enum EFI_VARIABLE_NON_VOLATILE = 0x00000001;
+enum EFI_VARIABLE_BOOTSERVICE_ACCESS = 0x00000002;
+enum EFI_VARIABLE_RUNTIME_ACCESS = 0x00000004;
+///
+/// This attribute is identified by the mnemonic 'HR'
+/// elsewhere in this specification.
+///
+enum EFI_VARIABLE_HARDWARE_ERROR_RECORD = 0x00000008;
+///
+/// Attributes of Authenticated Variable
+///
+enum EFI_VARIABLE_AUTHENTICATED_WRITE_ACCESS = 0x00000010;
+enum EFI_VARIABLE_TIME_BASED_AUTHENTICATED_WRITE_ACCESS = 0x00000020;
+enum EFI_VARIABLE_APPEND_WRITE = 0x00000040;
+
+// TODO: WIN_CERTIFICATE_UEFI_GUID-dependent structures

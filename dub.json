@@ -5,5 +5,5 @@
 	"authors": ["Jakub Szewczyk"],
 	"dependencies": {
 	},
-	"targetType": "sourceLibrary"
+	"targetType": "library"
 }

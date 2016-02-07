@@ -4,3 +4,7 @@ __dummy.html
 *.o
 *.obj
 dub.selections.json
+*.a
+*.lib
+*.dll
+*.so

@@ -31,7 +31,7 @@ struct GUID
     UINT32 Data1;
     UINT16 Data2;
     UINT16 Data3;
-    UINT8 Data4[8];
+    UINT8[8] Data4;
 }
 
 /// 8-bytes unsigned value that represents a physical system address.
@@ -653,5 +653,5 @@ auto SIGNATURE_32(T)(T A, T B, T C, T D)
 **/
 auto SIGNATURE_64(T)(T A, T B, T C, T D, T E, T F, T G, T H)
 {
-    return (SIGNATURE_32(A, B, C, D) | ((UINT64)(SIGNATURE_32(E, F, G, H)) << 32));
+    return (SIGNATURE_32(A, B, C, D) | (cast(UINT64)(SIGNATURE_32(E, F, G, H)) << 32));
 }
