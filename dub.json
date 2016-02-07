@@ -3,6 +3,8 @@
 	"description": "Bindings for UEFI API (Based on EDK2 2015)",
 	"copyright": "Copyright © 2016, Jakub Szewczyk",
 	"authors": ["Jakub Szewczyk"],
+	"license": "BSD 2-clause",
+	"homepage": "https://github.com/kubasz/uefi-d",
 	"dependencies": {
 	},
 	"targetType": "library"
