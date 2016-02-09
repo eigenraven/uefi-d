@@ -33,7 +33,8 @@ extern (C):
 // )
 UINT32 PXE_BUSTYPE(UINT32 a, UINT32 b, UINT32 c, UINT32 d)
 {
-	return ((cast(PXE_UINT32) (d) & 0xFF) << 24) | ((cast(PXE_UINT32) (c) & 0xFF) << 16) | ((cast(PXE_UINT32) (b) & 0xFF) << 8) | (cast(PXE_UINT32) (a) & 0xFF);
+    return ((cast(PXE_UINT32)(d) & 0xFF) << 24) | ((cast(PXE_UINT32)(c) & 0xFF) << 16) | (
+        (cast(PXE_UINT32)(b) & 0xFF) << 8) | (cast(PXE_UINT32)(a) & 0xFF);
 }
 /// UNDI ROM ID and devive ID signature.
 enum PXE_BUSTYPE_PXE = PXE_BUSTYPE('!', 'P', 'X', 'E');

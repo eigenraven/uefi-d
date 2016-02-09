@@ -20,6 +20,7 @@ import uefi.base_type;
 public:
 extern (C):
 public import uefi.acpi;
+
 struct EFI_ACPI_DATA_TABLE
 {
 align(1):

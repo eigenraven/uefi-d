@@ -362,7 +362,7 @@ alias EFI_FILE_OPEN_EX = EFI_STATUS function(EFI_FILE_PROTOCOL* This,
 	@retval EFI_VOLUME_CORRUPTED The file system structures are corrupted.
 	@retval EFI_OUT_OF_RESOURCES Unable to queue the request due to lack of resources.
 **/
-alias EFI_FILE_READ_EX = EFI_STATUS function(EFI_FILE_PROTOCOL * This, EFI_FILE_IO_TOKEN * Token) @nogc nothrow;
+alias EFI_FILE_READ_EX = EFI_STATUS function(EFI_FILE_PROTOCOL* This, EFI_FILE_IO_TOKEN* Token) @nogc nothrow;
 /**
 	Writes data to a file.
 	
@@ -382,7 +382,7 @@ alias EFI_FILE_READ_EX = EFI_STATUS function(EFI_FILE_PROTOCOL * This, EFI_FILE_
 	@retval EFI_VOLUME_FULL      The volume is full.
 	@retval EFI_OUT_OF_RESOURCES Unable to queue the request due to lack of resources.
 **/
-alias EFI_FILE_WRITE_EX = EFI_STATUS function(EFI_FILE_PROTOCOL * This, EFI_FILE_IO_TOKEN * Token) @nogc nothrow;
+alias EFI_FILE_WRITE_EX = EFI_STATUS function(EFI_FILE_PROTOCOL* This, EFI_FILE_IO_TOKEN* Token) @nogc nothrow;
 /**
 	Flushes all modified data associated with a file to a device.
 	
@@ -402,7 +402,7 @@ alias EFI_FILE_WRITE_EX = EFI_STATUS function(EFI_FILE_PROTOCOL * This, EFI_FILE
 	@retval EFI_OUT_OF_RESOURCES Unable to queue the request due to lack of resources.
 	
 **/
-alias EFI_FILE_FLUSH_EX = EFI_STATUS function(EFI_FILE_PROTOCOL * This, EFI_FILE_IO_TOKEN * Token) @nogc nothrow;
+alias EFI_FILE_FLUSH_EX = EFI_STATUS function(EFI_FILE_PROTOCOL* This, EFI_FILE_IO_TOKEN* Token) @nogc nothrow;
 enum EFI_FILE_PROTOCOL_REVISION = 0x00010000;
 enum EFI_FILE_PROTOCOL_REVISION2 = 0x00020000;
 enum EFI_FILE_PROTOCOL_LATEST_REVISION = EFI_FILE_PROTOCOL_REVISION2;
