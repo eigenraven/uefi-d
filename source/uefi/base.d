@@ -32,6 +32,27 @@ struct GUID
     UINT16 Data2;
     UINT16 Data3;
     UINT8[8] Data4;
+	this(UINT32 D1, UINT16 D2, UINT16 D3, UINT8[8] D4)
+	{
+		Data1 = D1;
+		Data2 = D2;
+		Data3 = D3;
+		Data4 = D4;
+	}
+	this(UINT32 D1, UINT16 D2, UINT16 D3, UINT8 D4_0, UINT8 D4_1, UINT8 D4_2, UINT8 D4_3, UINT8 D4_4, UINT8 D4_5, UINT8 D4_6, UINT8 D4_7)
+	{
+		Data1 = D1;
+		Data2 = D2;
+		Data3 = D3;
+		Data4[0] = D4_0;
+		Data4[1] = D4_1;
+		Data4[2] = D4_2;
+		Data4[3] = D4_3;
+		Data4[4] = D4_4;
+		Data4[5] = D4_5;
+		Data4[6] = D4_6;
+		Data4[7] = D4_7;
+	}
 }
 
 /// 8-bytes unsigned value that represents a physical system address.

@@ -22,15 +22,11 @@ import uefi.base;
 import uefi.base_type;
 import uefi.protocols.devicepath;
 import uefi.protocols.simpletextin;
+import uefi.protocols.simpletextinex;
 import uefi.protocols.simpletextout;
 
 public:
 extern (C):
-// FIXME: INCLUDE <Uefi/UefiMultiPhase.h>
-// FIXME: INCLUDE <Protocol/DevicePath.h>
-// FIXME: INCLUDE <Protocol/SimpleTextIn.h>
-// FIXME: INCLUDE <Protocol/SimpleTextInEx.h>
-// FIXME: INCLUDE <Protocol/SimpleTextOut.h>
 /// Enumeration of EFI memory allocation types.
 alias EFI_ALLOCATE_TYPE = UINT32;
 enum : EFI_ALLOCATE_TYPE
