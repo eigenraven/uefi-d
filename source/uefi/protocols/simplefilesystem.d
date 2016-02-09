@@ -22,7 +22,6 @@
 module uefi.protocols.simplefilesystem;
 import uefi.base;
 import uefi.base_type;
-import std.bitmanip;
 
 public:
 extern (C):

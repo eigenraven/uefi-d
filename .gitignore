@@ -9,3 +9,5 @@ dub.selections.json
 *.dll
 *.so
 tools/efihdrtool
+*.EFI
+*.efi

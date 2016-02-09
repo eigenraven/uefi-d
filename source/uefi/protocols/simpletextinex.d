@@ -20,7 +20,6 @@
 module uefi.protocols.simpletextinex;
 import uefi.base;
 import uefi.base_type;
-import std.bitmanip;
 import uefi.protocols.simpletextin;
 
 public:

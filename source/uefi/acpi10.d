@@ -15,7 +15,6 @@
 module uefi.acpi10;
 import uefi.base;
 import uefi.base_type;
-import std.bitmanip;
 public import uefi.acpiaml;
 
 public:

@@ -22,7 +22,6 @@
 module uefi.protocols.loadfile2;
 import uefi.base;
 import uefi.base_type;
-import std.bitmanip;
 import uefi.protocols.devicepath;
 
 public:

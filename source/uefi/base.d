@@ -24,6 +24,12 @@ public import uefi.bind;
 public:
 extern (C):
 
+/// Placeholder bitfields implementation, to be fixed
+template bitfields(T...)
+{
+	enum string bitfields = T[0].stringof ~ " bitfield_niy;";
+}
+
 /// 128 bit buffer containing a unique identifier value.
 /// Unless otherwise specified, aligned on a 64 bit boundary.
 struct GUID

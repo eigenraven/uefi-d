@@ -27,7 +27,6 @@
 module uefi.protocols.simplenetwork;
 import uefi.base;
 import uefi.base_type;
-import std.bitmanip;
 
 public:
 extern (C):

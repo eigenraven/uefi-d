@@ -21,7 +21,6 @@ import uefi.base;
 import uefi.base_type;
 import uefi.spec;
 import uefi.protocols.devicepath;
-import std.bitmanip;
 
 public:
 extern (C):
