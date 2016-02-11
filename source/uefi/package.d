@@ -9,9 +9,11 @@ mixin(UEFI_BindPublicImportString);
 
 public import uefi.base;
 public import uefi.base_type;
-
 public import uefi.gpt;
+public import uefi.guids;
 
+public import uefi.protocols.hash;
+public import uefi.protocols.hash2;
 public import uefi.protocols.devicepath;
 public import uefi.protocols.simpletextin;
 public import uefi.protocols.simpletextinex;

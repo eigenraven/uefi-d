@@ -435,39 +435,3 @@ struct _EFI_FILE_PROTOCOL
     EFI_FILE_FLUSH_EX FlushEx;
 
 }
-
-enum EFI_FILE_INFO_ID = GUID(0x9576e92, 0x6d3f, 0x11d2, 0x8e, 0x39, 0x0, 0xa0, 0xc9, 0x69, 0x72, 0x3b);
-struct EFI_FILE_INFO {
-///
-/// The size of the EFI_FILE_INFO structure, including the Null-terminated FileName string.
-///
-UINT64    Size;
-///
-/// The size of the file in bytes.
-///
-UINT64    FileSize;
-///
-/// PhysicalSize The amount of physical space the file consumes on the file system volume.
-///
-UINT64    PhysicalSize;
-///
-/// The time the file was created.
-///
-EFI_TIME  CreateTime;
-///
-/// The time when the file was last accessed.
-///
-EFI_TIME  LastAccessTime;
-///
-/// The time when the file's contents were last modified.
-///
-EFI_TIME  ModificationTime;
-///
-/// The attribute bits for the file.
-///
-UINT64    Attribute;
-///
-/// The Null-terminated name of the file.
-///
-CHAR16    FileName[1];
-}

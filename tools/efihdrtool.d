@@ -8,39 +8,46 @@ import std.path, std.process;
 
 File fpIn;
 File fpOut;
-char[] cLine;
+char[] cLine, nLine;
 string moduleName = "0";
 string inFile;
+bool moduleDone = false;
 
 void main(string[] args)
 {
-    if (args.length != 3)
+    if (args.length < 3)
     {
-        stderr.writefln("Usage: %s InFile.h OutFile.d", args[0]);
+        stderr.writefln("Usage: %s InFile.h [+] OutFile.d", args[0]);
         return;
     }
-    inFile = args[1];
-    inFile = inFile[inFile.indexOf("Include/") + 8 .. $];
-    fpIn = File(args[1], "r");
-    fpOut = File(args[2], "w");
-    if (args[2].startsWith("source/"))
-        moduleName = args[2]["source/uefi/".length .. $ - 2].replace("/", ".");
-    while (!fpIn.eof())
-    {
-        nextLine();
-        process();
-    }
+	fpOut = File(args[$-1], "w");
+	if (args[$-1].startsWith("source/"))
+		moduleName = args[$-1]["source/uefi/".length .. $ - 2].replace("/", ".");
+	foreach(iff; args[1..$-1])
+	{
+		stderr.writeln("Processing ",iff);
+		inFile = iff[iff.indexOf("Include/") + 8 .. $];
+		fpIn = File(iff, "r");
+		nextLine();
+		while (!fpIn.eof())
+		{
+			nextLine();
+			process();
+		}
+		fpIn.close();
+	}
     fpOut.flush();
-    fpIn.close();
     fpOut.close();
-    execute(["dfix", args[2]]);
-    execute(["dfmt", args[2], "-i"]);
+    writeln(execute(["dfix", args[$-1]]));
+    writeln(execute(["dfmt", args[$-1], "-i"]));
 }
 
 void nextLine()
 {
-    fpIn.readln(cLine);
-    cLine = cLine.strip;
+	cLine = nLine;
+	nLine = [];
+    fpIn.readln(nLine);
+    nLine = nLine.strip;
 }
 
 bool startsWith(const(char[]) a, const(char[]) b)
@@ -75,6 +82,15 @@ bool endsWith(const(char[]) a, const(char[]) b)
 
 __gshared int pack = 0;
 
+string chompx(string s, const(dchar)[] chs)
+{
+	foreach(ch; chs)
+	{
+		s = s.chomp([ch]).chompPrefix([ch]);
+	}
+	return s;
+}
+
 void process()
 {
     if (cLine.length < 1)
@@ -102,7 +118,7 @@ void process()
     {
         fpOut.writeln(cLine);
     }
-    if (cLine == "/** @file")
+    if (cLine == "/** @file" && !moduleDone)
     {
         fpOut.writeln("/**");
         fpOut.writefln("\tBased on %s, original notice:\n", inFile);
@@ -122,9 +138,10 @@ void process()
         fpOut.writefln("module uefi.%s;", moduleName);
         fpOut.writeln("import uefi.base;");
         fpOut.writeln("import uefi.base_type;");
-        fpOut.writeln("import std.bitmanip;");
+        //fpOut.writeln("import std.bitmanip;");
         fpOut.writeln("public:");
         fpOut.writeln("extern (C):");
+		moduleDone = true;
         return;
     }
     if (cLine == "/**")
@@ -162,15 +179,16 @@ void process()
         {
             return;
         }
-        if (cLine.endsWith("_GUID \\"))
+        if (cLine.endsWith("\\") && nLine.startsWith("{"))
         {
             string Id = cLine[8 .. $ - 2].idup;
             nextLine();
-            nextLine();
-            string Guid = cLine[0 .. $ - 2].idup;
+			if(!cLine.canFind(','))
+            	nextLine();
+            string Guid = cLine[0 .. $].idup;
             nextLine();
             fpOut.writeln("enum EFI_GUID ", Id, " = EFI_GUID(",
-                Guid.replace("{", "[").replace("}", "]"), ");");
+                Guid.chompx("\\;[]{}").replace("{", "[").replace("}", "]"), ");");
         }
         else
         {
