@@ -1,427 +1,165 @@
+#!/usr/bin/env dub
+/+ dub.sdl:
+	name "efihdrtool"
+    dependency "pegged" version="~>0.4.3"
++/
 /// A program to simplify the process of translating UEFI headers from C -> D
-/// Usage: efihdrtool InFile OutFile
+/// Usage: dub run --single efihdrtool.d -- [options] specfile.map
+/// Where specfile.map contains pairs a/b/header.h = uefi.dmodulename
+/// It outputs files to source/pack/age/module.d unless otherwise specified
 module efihdrtool;
 
-import std.stdio, std.string, std.array, std.algorithm, std.range, std.math,
+import std.stdio, std.string, std.array, std.algorithm, std.range,
     std.format, std.conv;
-import std.path, std.process;
+import std.path, std.process, std.getopt;
+import std.file : isFile, exists, mkdirRecurse, readText;
+import pegged.grammar;
 
-File fpIn;
-File fpOut;
-char[] cLine, nLine;
-string moduleName = "0";
-string inFile;
-bool moduleDone = false;
+bool runDfmt = false;
+string inPathRoot = "../tianocore_hdrs/Include";
+string outPathRoot = "source";
 
-void main(string[] args)
+struct GeneratedModule
 {
-    if (args.length < 3)
+    this(string name)
     {
-        stderr.writefln("Usage: %s InFile.h [+] OutFile.d", args[0]);
-        return;
+        this.name = name;
+        this.dpath = name.translate(['.':'/']) ~ ".d";
     }
-	fpOut = File(args[$-1], "w");
-	if (args[$-1].startsWith("source/"))
-		moduleName = args[$-1]["source/uefi/".length .. $ - 2].replace("/", ".");
-	foreach(iff; args[1..$-1])
-	{
-		stderr.writeln("Processing ",iff);
-		inFile = iff[iff.indexOf("Include/") + 8 .. $];
-		fpIn = File(iff, "r");
-		nextLine();
-		while (!fpIn.eof())
-		{
-			nextLine();
-			process();
-		}
-		fpIn.close();
-	}
-    fpOut.flush();
-    fpOut.close();
-    writeln(execute(["dfix", args[$-1]]));
-    writeln(execute(["dfmt", args[$-1], "-i"]));
+
+    string name;
+    string dpath;
+    string[] hpaths;
+    Appender!(char[]) code;
 }
 
-void nextLine()
+/// Modules indexed by their names
+GeneratedModule*[string] modules;
+/// Header paths mapped to modules
+GeneratedModule*[string] headerToModuleMappings;
+
+int main(string[] args)
 {
-	cLine = nLine;
-	nLine = [];
-    fpIn.readln(nLine);
-    nLine = nLine.strip;
+    // dfmt off
+    GetoptResult gor = getopt(args,
+        "f|dfmt", "Run dfmt on the generated source code", &runDfmt,
+        "i|inputPath", "The root of the input header files", &inPathRoot,
+        "o|outputPath", "The source root for the outputted modules", &outPathRoot
+    );
+    // dfmt on
+    if(args.length != 2 || gor.helpWanted)
+    {
+        defaultGetoptPrinter("dub run --single efihdrtool.d -- [options] specfile.map", gor.options);
+        return 1;
+    }
+
+    try
+    {
+        loadMapping(File(args[1], "r"));
+    }
+    catch(Exception e)
+    {
+        writeln(e.msg);
+        return 1;
+    }
+
+    // look for nonexistant files
+    string[] nonexistant;
+    foreach(hpath, mod; headerToModuleMappings)
+    {
+        string hfullpath = buildNormalizedPath(inPathRoot, hpath);
+        if(!exists(hfullpath) || !isFile(hfullpath))
+            nonexistant ~= hfullpath;
+        string dfulldir = buildNormalizedPath(outPathRoot, mod.dpath).dirName;
+        if(!exists(dfulldir))
+            mkdirRecurse(dfulldir);
+    }
+    if(nonexistant.length > 0)
+    {
+        writefln("The following files could not be found: \n%(%s\n%)", nonexistant);
+        return 1;
+    }
+
+    foreach(dmod; modules)
+    {
+        foreach(hpath; dmod.hpaths)
+        {
+            string hfullpath = buildNormalizedPath(inPathRoot, hpath);
+            string htext = readText(hfullpath);
+            processCode(dmod, htext);
+        }
+    }
+
+    return 0;
 }
 
-bool startsWith(const(char[]) a, const(char[]) b)
+void loadMapping(File mapFile)
 {
-    size_t bl = b.length;
-    if (b[$ - 1] == '\0')
-        bl--;
-    if (a.length < bl)
-        return false;
-    for (int i = 0; i < bl; i++)
+    foreach(lineR; mapFile.byLine)
     {
-        if (a[i] != b[i])
-            return false;
-    }
-    return true;
-}
-
-bool endsWith(const(char[]) a, const(char[]) b)
-{
-    size_t bl = b.length;
-    if (b[$ - 1] == '\0')
-        bl--;
-    if (a.length < bl)
-        return false;
-    for (int i = 0; i < bl; i++)
-    {
-        if (a[$ - bl + i] != b[i])
-            return false;
-    }
-    return true;
-}
-
-__gshared int pack = 0;
-
-string chompx(string s, const(dchar)[] chs)
-{
-	foreach(ch; chs)
-	{
-		s = s.chomp([ch]).chompPrefix([ch]);
-	}
-	return s;
-}
-
-void process()
-{
-    if (cLine.length < 1)
-    {
-        //fpOut.writeln();
-        return;
-    }
-    if (cLine.startsWith("#pragma"))
-    {
-        if (cLine.indexOf("pack") > 0)
-        {
-            if (cLine.endsWith(`()`))
-            {
-                pack = 0;
-            }
-            else
-            {
-                pack = 1;
-            }
-        }
-    }
-    if (cLine == "///")
-        return;
-    if (cLine.startsWith("///"))
-    {
-        fpOut.writeln(cLine);
-    }
-    if (cLine == "/** @file" && !moduleDone)
-    {
-        fpOut.writeln("/**");
-        fpOut.writefln("\tBased on %s, original notice:\n", inFile);
-        while (true)
-        {
-            nextLine();
-            if (cLine != "**/")
-            {
-                fpOut.writeln("\t", cLine.replace("<BR>", ""));
-            }
-            else
-            {
-                break;
-            }
-        }
-        fpOut.writeln("**/");
-        fpOut.writefln("module uefi.%s;", moduleName);
-        fpOut.writeln("import uefi.base;");
-        fpOut.writeln("import uefi.base_type;");
-        //fpOut.writeln("import std.bitmanip;");
-        fpOut.writeln("public:");
-        fpOut.writeln("extern (C):");
-		moduleDone = true;
-        return;
-    }
-    if (cLine == "/**")
-    {
-        fpOut.writeln("/**");
-        while (true)
-        {
-            nextLine();
-            if (!cLine.endsWith("**/"))
-            {
-                fpOut.writeln("\t", cLine);
-            }
-            else
-            {
-                break;
-            }
-        }
-        fpOut.writeln("**/");
-        return;
-    }
-    if (cLine.startsWith("#ifndef __"))
-    {
-        nextLine(); // skip header safeguard
-        return;
-    }
-    if (cLine.startsWith("#include "))
-    {
-        fpOut.writeln("// FIXME: INCLUDE ", cLine[9 .. $]);
-        stderr.writeln("// FIXME: INCLUDE ", cLine[9 .. $]);
-        return;
-    }
-    if (cLine.startsWith("#define"))
-    {
-        if (cLine.endsWith("_H_"))
-        {
-            return;
-        }
-        if (cLine.endsWith("\\") && nLine.startsWith("{"))
-        {
-            string Id = cLine[8 .. $ - 2].idup;
-            nextLine();
-			if(!cLine.canFind(','))
-            	nextLine();
-            string Guid = cLine[0 .. $].idup;
-            nextLine();
-            fpOut.writeln("enum EFI_GUID ", Id, " = EFI_GUID(",
-                Guid.chompx("\\;[]{}").replace("{", "[").replace("}", "]"), ");");
-        }
-        else
-        {
-            // #define abc def
-            auto Split = cLine.replace("ULL", "UL").split;
-            if (Split[1].indexOf("(") > 0)
-            {
-                fpOut.writeln("// ", cLine);
-                while (cLine[$ - 1] == '\\')
-                {
-                    nextLine();
-                    fpOut.writeln("// ", cLine);
-                }
-            }
-            else
-            {
-                fpOut.writef("enum %s = ", Split[1]); //Split[2..$].join(" ")
-                bool hadSemicolon = false;
-                foreach (txt; Split[2 .. $])
-                {
-                    if (txt.startsWith("//") || txt.startsWith("/*"))
-                    {
-                        hadSemicolon = true;
-                        fpOut.write("; ");
-                    }
-                    if (txt == "{")
-                    {
-                        fpOut.write(txt, "GUID( ");
-                    }
-                    else if (txt == "}")
-                    {
-                        fpOut.write(txt, " );");
-                    }
-                    else
-                    {
-                        fpOut.write(txt, ' ');
-                    }
-                }
-                fpOut.write((hadSemicolon) ? "\n" : ";\n");
-            }
-        }
-        return;
-    }
-    if (cLine.startsWith("typedef "))
-    {
-        cLine = cLine[8 .. $];
-        if (cLine.startsWith("PACKED"))
-        {
-            cLine = cLine[7 .. $];
-        }
-        if (cLine.startsWith("struct _") && (cLine[$ - 1] != '{'))
-            cLine = cLine[7 .. $];
-        if (cLine.startsWith("union _") && (cLine[$ - 1] != '{'))
-            cLine = cLine[6 .. $];
-        if (cLine.startsWith("struct"))
-        {
-            auto app = appender!string;
-            nextLine();
-            handleStructInterior(app);
-            string Id;
-            if (cLine.length < 3)
-            {
-                nextLine();
-                Id = cLine[0 .. $ - 1].idup;
-            }
-            else
-            {
-                Id = cLine[2 .. $ - 1].idup;
-            }
-            fpOut.writeln("struct ", Id, pack ? " {align(1):\n" : " {\n", app.data,
-                "}");
-        }
-        else if (cLine.startsWith("enum"))
-        {
-            auto app = appender!string;
-            nextLine();
-            while (!cLine.startsWith("}"))
-            {
-                app ~= cLine.idup;
-                app ~= '\n';
-                nextLine();
-            }
-            string Id;
-            if (cLine.length < 3)
-            {
-                nextLine();
-                Id = cLine[0 .. $ - 1].idup;
-            }
-            else
-            {
-                Id = cLine[2 .. $ - 1].idup;
-            }
-            fpOut.writeln("alias ", Id, " = UINT32;");
-            fpOut.writeln("enum :", Id, " {\n", app.data, "}");
-        }
-        else if (cLine.startsWith("union"))
-        {
-            auto app = appender!string;
-            nextLine();
-            handleStructInterior(app);
-            string Id;
-            if (cLine.length < 3)
-            {
-                nextLine();
-                Id = cLine[0 .. $ - 1].idup;
-            }
-            else
-            {
-                Id = cLine[2 .. $ - 1].idup;
-            }
-            fpOut.writeln("union ", Id, " {\n", app.data, "}");
-        }
-        else
-        {
-            auto Split = cLine[0 .. $ - 1].split;
-            fpOut.writefln("alias %s = %s;", Split[$ - 1], Split[0 .. $ - 1].join(" "));
-        }
-        return;
-    }
-    if (cLine == "typedef") // function pointer
-    {
-        nextLine();
-        string RetType = cLine.idup;
-        nextLine();
-        // (EFIAPI *EFI_TEXT_CLEAR_SCREEN)(
-        string FunName = cLine[9 .. $ - 2].idup;
-        nextLine();
-        auto Args = appender!string;
-        while (cLine != ");")
-        {
-            auto Kw = cLine.split;
-            foreach (K; Kw)
-            {
-                if ((K == "IN") || (K == "OUT") || (K == "EFIAPI") || (K == "OPTIONAL"))
-                    continue;
-                if ((K == "IN,") || (K == "OUT,") || (K == "EFIAPI,") || (K == "OPTIONAL,"))
-                {
-                    Args ~= ',';
-                    continue;
-                }
-                if (K == "CONST")
-                    K = "const".dup;
-                if (K == "VOID")
-                    K = "void".dup;
-                Args ~= K;
-                Args ~= ' ';
-            }
-            nextLine();
-        }
-        fpOut.writefln("alias %s = %s function(%s) @nogc nothrow;", FunName, RetType,
-            Args.data);
-    }
-    if (cLine.startsWith("struct"))
-    {
-        auto app = appender!string;
-        handleStructInterior(app);
-        fpOut.writeln(app.data);
-        fpOut.writeln("}");
-        return;
-    }
-}
-
-void handleStructInterior(T)(T app)
-{
-    int numNests = 1;
-    bool inBitfields = false;
-    while (true)
-    {
-        if (cLine.length < 1)
-        {
-            nextLine();
+        auto line = lineR.strip;
+        if(line.length < 1)
             continue;
-        }
-		if(cLine.startsWith("//"))
-		{
-			app ~= cLine.idup;
-			app ~= '\n';
-			nextLine();
-			continue;
-		}
-        if (cLine.startsWith("PACKED "))
+        if(line[0] == '#')
+            continue;
+        if(auto spl = line.findSplit("="))
         {
-            cLine = cLine[7 .. $];
-        }
-        if (cLine.startsWith("union {") || cLine.startsWith("struct {"))
-        {
-            app ~= `/* FIX:NESTED STRUCTURES */`;
-            numNests++;
-        }
-        if (cLine.startsWith("}"))
-        {
-            numNests--;
-        }
-        if (numNests <= 0)
-        {
-            break;
-        }
-
-        if (cLine.indexOf(":") > 0)
-        {
-            import std.regex;
-			cLine = cLine.strip;
-            auto spl = splitter(cLine, regex(`[ \t:;]+`)).array;
-            if (!inBitfields)
-            {
-                inBitfields = true;
-                app ~= "mixin(bitfields!(\n";
-            }
-            else
-            {
-                app ~= ",\n";
-            }
-            app ~= spl[0].idup; // type
-            app ~= `,"`;
-            app ~= spl[1].idup; // fname
-            app ~= `",`;
-            app ~= spl[2].idup; // width
+            string hpath = spl[0].strip.idup;
+            string dmod = spl[2].strip.idup;
+            if(dmod !in modules)
+                modules[dmod] = new GeneratedModule(dmod);
+            modules[dmod].hpaths ~= hpath;
+            headerToModuleMappings[hpath] = modules[dmod];
         }
         else
         {
-            if (inBitfields)
-            {
-                inBitfields = false;
-                app ~= "));";
-            }
-            app ~= cLine.idup;
-            app ~= '\n';
+            throw new Exception("Malformed input line: "~lineR.idup);
         }
-        nextLine();
     }
-	if (inBitfields)
-	{
-		inBitfields = false;
-		app ~= "));";
-	}
 }
+
+void processCode(GeneratedModule* dmod, string htext)
+{
+    ParseTree p = CCode(htext);
+    import pegged.tohtml;
+    toHTML(p, File("parseresult.html", "w"));
+}
+
+mixin(grammar(PEG_C_GRAMMAR));
+enum string PEG_C_GRAMMAR = q{
+CCode:
+
+    Unit <- (Spacing? (
+              GuardedBlock
+            / Include
+            / DefineMacro
+            / DefineConstant
+            / AliasTypedef
+            / UnrecognisedDecl
+            ))+
+
+    DocComment <~ "/**" (!"*/" .)* "*/"
+                / "///" (!endOfLine .)* endOfLine (space* "///" (!endOfLine .)* endOfLine)*
+    Comment <~ "//" (!endOfLine .)* endOfLine
+             / "/*" (!"*/" .)* "*/"
+
+    Spacing <~ (:space / :endOfLine / DocComment / :Comment)*
+    Identifier <~ [a-zA-Z_] [a-zA-Z0-9_]*
+    Pointer <- Type Spacing? '*'
+    Type <- Pointer / Identifier
+    UntilEOL <~ (!endOfLine .)* :endOfLine
+
+    GuardStart <- "#ifndef" Spacing Identifier endOfLine
+                  "#define" Spacing Identifier endOfLine
+    GuardEnd <- "#endif"
+    GuardedBlock <- GuardStart Unit GuardEnd
+
+    Include <- "#include" Spacing ('<'/doublequote) ~(!doublequote !'>' .)+ ('>'/doublequote)
+    DefineMacro <- "#define" Spacing Identifier ~('(' (!')' .)* ')') UntilEOL
+    DefineConstant <- "#define" Spacing Identifier Spacing UntilEOL
+
+    AliasTypedef <- "typedef" Spacing Type Spacing Identifier ";"
+
+
+    UnrecognisedDecl <- (!';' .)+ ';'
+};

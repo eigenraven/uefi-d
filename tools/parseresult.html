@@ -1,0 +1,1360 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Pegged produced parse tree</title>
+<style>
+code {
+    position: relative;
+    font-family: monospace;
+    white-space: pre;
+}
+code.failure {
+    color: red;
+}
+/* hide tooltip */
+code span {
+    display: none;
+}
+/* show and style tooltip */
+code:hover span {
+    /* show tooltip */
+    display: block;
+    /* position relative to container div.tooltip */
+    position: absolute;
+    top: -1.6em;
+    left: -0.6em;
+    background: #ffffff;
+    padding: 0.5em;
+    color: #000000;
+    border: 0.1em solid #b7ddf2;
+    border-radius: 0.5em;
+    white-space: nowrap;
+    z-index: 1;
+}
+details {
+    margin-left:25px;
+    white-space: nowrap;
+}
+details.leaf summary::-webkit-details-marker {
+    opacity: 0;
+}
+</style>
+</head>
+<body>
+    <details><summary>CCode [0, 7777] <code>/** @file<span><pre>/** @file
+  Defines data types and constants introduced in UEFI.
+
+Copyright (c) 2006 - 2017, Intel Corporation. All rights reserved.<BR>
+Portions copyright (c) 2011 - 2016, ARM Ltd. All rights reserved.<BR>
+
+This program and the accompanying materials are licensed and made available under 
+the terms and conditions of the BSD License that accompanies this distribution.  
+The full text of the license may be found at
+http://opensource.org/licenses/bsd-license.php.                                          
+    
+THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "AS IS" BASIS,                     
+WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
+
+**/
+
+#ifndef __UEFI_BASETYPE_H__
+#define __UEFI_BASETYPE_H__
+
+#include <Base.h>
+
+//
+// Basic data type definitions introduced in UEFI.
+//
+
+///
+/// 128-bit buffer containing a unique identifier value.
+///
+typedef GUID                      EFI_GUID;
+///
+/// Function return status for EFI API.
+///
+typedef RETURN_STATUS             EFI_STATUS;
+///
+/// A collection of related interfaces.
+///
+typedef VOID                      *EFI_HANDLE;
+///
+/// Handle to an event structure.
+///
+typedef VOID                      *EFI_EVENT;
+///
+/// Task priority level.
+///
+typedef UINTN                     EFI_TPL;
+///
+/// Logical block address.
+///
+typedef UINT64                    EFI_LBA;
+
+///
+/// 64-bit physical memory address.
+///
+typedef UINT64                    EFI_PHYSICAL_ADDRESS;
+
+///
+/// 64-bit virtual memory address.
+///
+typedef UINT64                    EFI_VIRTUAL_ADDRESS;
+
+///
+/// EFI Time Abstraction:
+///  Year:       1900 - 9999
+///  Month:      1 - 12
+///  Day:        1 - 31
+///  Hour:       0 - 23
+///  Minute:     0 - 59
+///  Second:     0 - 59
+///  Nanosecond: 0 - 999,999,999
+///  TimeZone:   -1440 to 1440 or 2047
+///
+typedef struct {
+  UINT16  Year;
+  UINT8   Month;
+  UINT8   Day;
+  UINT8   Hour;
+  UINT8   Minute;
+  UINT8   Second;
+  UINT8   Pad1;
+  UINT32  Nanosecond;
+  INT16   TimeZone;
+  UINT8   Daylight;
+  UINT8   Pad2;
+} EFI_TIME;
+
+
+///
+/// 4-byte buffer. An IPv4 internet protocol address.
+///
+typedef IPv4_ADDRESS EFI_IPv4_ADDRESS;
+
+///
+/// 16-byte buffer. An IPv6 internet protocol address.
+///
+typedef IPv6_ADDRESS EFI_IPv6_ADDRESS;
+
+///
+/// 32-byte buffer containing a network Media Access Control address.
+///
+typedef struct {
+  UINT8 Addr[32];
+} EFI_MAC_ADDRESS;
+
+///
+/// 16-byte buffer aligned on a 4-byte boundary.
+/// An IPv4 or IPv6 internet protocol address.
+///
+typedef union {
+  UINT32            Addr[4];
+  EFI_IPv4_ADDRESS  v4;
+  EFI_IPv6_ADDRESS  v6;
+} EFI_IP_ADDRESS;
+
+
+///
+/// Enumeration of EFI_STATUS.
+///@{ 
+#define EFI_SUCCESS               RETURN_SUCCESS              
+#define EFI_LOAD_ERROR            RETURN_LOAD_ERROR           
+#define EFI_INVALID_PARAMETER     RETURN_INVALID_PARAMETER    
+#define EFI_UNSUPPORTED           RETURN_UNSUPPORTED          
+#define EFI_BAD_BUFFER_SIZE       RETURN_BAD_BUFFER_SIZE      
+#define EFI_BUFFER_TOO_SMALL      RETURN_BUFFER_TOO_SMALL     
+#define EFI_NOT_READY             RETURN_NOT_READY            
+#define EFI_DEVICE_ERROR          RETURN_DEVICE_ERROR         
+#define EFI_WRITE_PROTECTED       RETURN_WRITE_PROTECTED      
+#define EFI_OUT_OF_RESOURCES      RETURN_OUT_OF_RESOURCES     
+#define EFI_VOLUME_CORRUPTED      RETURN_VOLUME_CORRUPTED     
+#define EFI_VOLUME_FULL           RETURN_VOLUME_FULL          
+#define EFI_NO_MEDIA              RETURN_NO_MEDIA             
+#define EFI_MEDIA_CHANGED         RETURN_MEDIA_CHANGED        
+#define EFI_NOT_FOUND             RETURN_NOT_FOUND            
+#define EFI_ACCESS_DENIED         RETURN_ACCESS_DENIED        
+#define EFI_NO_RESPONSE           RETURN_NO_RESPONSE          
+#define EFI_NO_MAPPING            RETURN_NO_MAPPING           
+#define EFI_TIMEOUT               RETURN_TIMEOUT              
+#define EFI_NOT_STARTED           RETURN_NOT_STARTED          
+#define EFI_ALREADY_STARTED       RETURN_ALREADY_STARTED      
+#define EFI_ABORTED               RETURN_ABORTED              
+#define EFI_ICMP_ERROR            RETURN_ICMP_ERROR           
+#define EFI_TFTP_ERROR            RETURN_TFTP_ERROR           
+#define EFI_PROTOCOL_ERROR        RETURN_PROTOCOL_ERROR       
+#define EFI_INCOMPATIBLE_VERSION  RETURN_INCOMPATIBLE_VERSION 
+#define EFI_SECURITY_VIOLATION    RETURN_SECURITY_VIOLATION   
+#define EFI_CRC_ERROR             RETURN_CRC_ERROR   
+#define EFI_END_OF_MEDIA          RETURN_END_OF_MEDIA
+#define EFI_END_OF_FILE           RETURN_END_OF_FILE
+#define EFI_INVALID_LANGUAGE      RETURN_INVALID_LANGUAGE
+#define EFI_COMPROMISED_DATA      RETURN_COMPROMISED_DATA
+#define EFI_HTTP_ERROR            RETURN_HTTP_ERROR
+
+#define EFI_WARN_UNKNOWN_GLYPH    RETURN_WARN_UNKNOWN_GLYPH   
+#define EFI_WARN_DELETE_FAILURE   RETURN_WARN_DELETE_FAILURE  
+#define EFI_WARN_WRITE_FAILURE    RETURN_WARN_WRITE_FAILURE   
+#define EFI_WARN_BUFFER_TOO_SMALL RETURN_WARN_BUFFER_TOO_SMALL
+#define EFI_WARN_STALE_DATA       RETURN_WARN_STALE_DATA
+#define EFI_WARN_FILE_SYSTEM      RETURN_WARN_FILE_SYSTEM
+///@}
+
+///
+/// Define macro to encode the status code.
+/// 
+#define EFIERR(_a)                ENCODE_ERROR(_a)
+
+#define EFI_ERROR(A)              RETURN_ERROR(A)
+
+///
+/// ICMP error definitions
+///@{
+#define EFI_NETWORK_UNREACHABLE   EFIERR(100)
+#define EFI_HOST_UNREACHABLE      EFIERR(101) 
+#define EFI_PROTOCOL_UNREACHABLE  EFIERR(102)
+#define EFI_PORT_UNREACHABLE      EFIERR(103)
+///@}
+
+///
+/// Tcp connection status definitions
+///@{
+#define EFI_CONNECTION_FIN        EFIERR(104)
+#define EFI_CONNECTION_RESET      EFIERR(105)
+#define EFI_CONNECTION_REFUSED    EFIERR(106)
+///@}
+
+//
+// The EFI memory allocation functions work in units of EFI_PAGEs that are
+// 4KB. This should in no way be confused with the page size of the processor.
+// An EFI_PAGE is just the quanta of memory in EFI.
+//
+#define EFI_PAGE_SIZE             SIZE_4KB
+#define EFI_PAGE_MASK             0xFFF
+#define EFI_PAGE_SHIFT            12
+
+/**
+  Macro that converts a size, in bytes, to a number of EFI_PAGESs.
+
+  @param  Size      A size in bytes.  This parameter is assumed to be type UINTN.  
+                    Passing in a parameter that is larger than UINTN may produce 
+                    unexpected results.
+
+  @return  The number of EFI_PAGESs associated with the number of bytes specified
+           by Size.
+
+**/
+#define EFI_SIZE_TO_PAGES(Size)  (((Size) >> EFI_PAGE_SHIFT) + (((Size) & EFI_PAGE_MASK) ? 1 : 0))
+
+/**
+  Macro that converts a number of EFI_PAGEs to a size in bytes.
+
+  @param  Pages     The number of EFI_PAGES.  This parameter is assumed to be 
+                    type UINTN.  Passing in a parameter that is larger than 
+                    UINTN may produce unexpected results.
+
+  @return  The number of bytes associated with the number of EFI_PAGEs specified 
+           by Pages.
+  
+**/
+#define EFI_PAGES_TO_SIZE(Pages)  ((Pages) << EFI_PAGE_SHIFT)
+
+///
+/// PE32+ Machine type for IA32 UEFI images.
+///
+#define EFI_IMAGE_MACHINE_IA32            0x014C
+
+///
+/// PE32+ Machine type for IA64 UEFI images.
+///
+#define EFI_IMAGE_MACHINE_IA64            0x0200
+
+///
+/// PE32+ Machine type for EBC UEFI images.
+///
+#define EFI_IMAGE_MACHINE_EBC             0x0EBC
+
+///
+/// PE32+ Machine type for X64 UEFI images.
+///
+#define EFI_IMAGE_MACHINE_X64             0x8664
+
+///
+/// PE32+ Machine type for ARM mixed ARM and Thumb/Thumb2 images.
+///
+#define EFI_IMAGE_MACHINE_ARMTHUMB_MIXED  0x01C2
+
+///
+/// PE32+ Machine type for AARCH64 A64 images.
+///
+#define EFI_IMAGE_MACHINE_AARCH64  0xAA64
+</pre></span></code></summary>
+<details><summary>CCode.Unit [0, 7777] <code>/** @file<span><pre>/** @file
+  Defines data types and constants introduced in UEFI.
+
+Copyright (c) 2006 - 2017, Intel Corporation. All rights reserved.<BR>
+Portions copyright (c) 2011 - 2016, ARM Ltd. All rights reserved.<BR>
+
+This program and the accompanying materials are licensed and made available under 
+the terms and conditions of the BSD License that accompanies this distribution.  
+The full text of the license may be found at
+http://opensource.org/licenses/bsd-license.php.                                          
+    
+THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "AS IS" BASIS,                     
+WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
+
+**/
+
+#ifndef __UEFI_BASETYPE_H__
+#define __UEFI_BASETYPE_H__
+
+#include <Base.h>
+
+//
+// Basic data type definitions introduced in UEFI.
+//
+
+///
+/// 128-bit buffer containing a unique identifier value.
+///
+typedef GUID                      EFI_GUID;
+///
+/// Function return status for EFI API.
+///
+typedef RETURN_STATUS             EFI_STATUS;
+///
+/// A collection of related interfaces.
+///
+typedef VOID                      *EFI_HANDLE;
+///
+/// Handle to an event structure.
+///
+typedef VOID                      *EFI_EVENT;
+///
+/// Task priority level.
+///
+typedef UINTN                     EFI_TPL;
+///
+/// Logical block address.
+///
+typedef UINT64                    EFI_LBA;
+
+///
+/// 64-bit physical memory address.
+///
+typedef UINT64                    EFI_PHYSICAL_ADDRESS;
+
+///
+/// 64-bit virtual memory address.
+///
+typedef UINT64                    EFI_VIRTUAL_ADDRESS;
+
+///
+/// EFI Time Abstraction:
+///  Year:       1900 - 9999
+///  Month:      1 - 12
+///  Day:        1 - 31
+///  Hour:       0 - 23
+///  Minute:     0 - 59
+///  Second:     0 - 59
+///  Nanosecond: 0 - 999,999,999
+///  TimeZone:   -1440 to 1440 or 2047
+///
+typedef struct {
+  UINT16  Year;
+  UINT8   Month;
+  UINT8   Day;
+  UINT8   Hour;
+  UINT8   Minute;
+  UINT8   Second;
+  UINT8   Pad1;
+  UINT32  Nanosecond;
+  INT16   TimeZone;
+  UINT8   Daylight;
+  UINT8   Pad2;
+} EFI_TIME;
+
+
+///
+/// 4-byte buffer. An IPv4 internet protocol address.
+///
+typedef IPv4_ADDRESS EFI_IPv4_ADDRESS;
+
+///
+/// 16-byte buffer. An IPv6 internet protocol address.
+///
+typedef IPv6_ADDRESS EFI_IPv6_ADDRESS;
+
+///
+/// 32-byte buffer containing a network Media Access Control address.
+///
+typedef struct {
+  UINT8 Addr[32];
+} EFI_MAC_ADDRESS;
+
+///
+/// 16-byte buffer aligned on a 4-byte boundary.
+/// An IPv4 or IPv6 internet protocol address.
+///
+typedef union {
+  UINT32            Addr[4];
+  EFI_IPv4_ADDRESS  v4;
+  EFI_IPv6_ADDRESS  v6;
+} EFI_IP_ADDRESS;
+
+
+///
+/// Enumeration of EFI_STATUS.
+///@{ 
+#define EFI_SUCCESS               RETURN_SUCCESS              
+#define EFI_LOAD_ERROR            RETURN_LOAD_ERROR           
+#define EFI_INVALID_PARAMETER     RETURN_INVALID_PARAMETER    
+#define EFI_UNSUPPORTED           RETURN_UNSUPPORTED          
+#define EFI_BAD_BUFFER_SIZE       RETURN_BAD_BUFFER_SIZE      
+#define EFI_BUFFER_TOO_SMALL      RETURN_BUFFER_TOO_SMALL     
+#define EFI_NOT_READY             RETURN_NOT_READY            
+#define EFI_DEVICE_ERROR          RETURN_DEVICE_ERROR         
+#define EFI_WRITE_PROTECTED       RETURN_WRITE_PROTECTED      
+#define EFI_OUT_OF_RESOURCES      RETURN_OUT_OF_RESOURCES     
+#define EFI_VOLUME_CORRUPTED      RETURN_VOLUME_CORRUPTED     
+#define EFI_VOLUME_FULL           RETURN_VOLUME_FULL          
+#define EFI_NO_MEDIA              RETURN_NO_MEDIA             
+#define EFI_MEDIA_CHANGED         RETURN_MEDIA_CHANGED        
+#define EFI_NOT_FOUND             RETURN_NOT_FOUND            
+#define EFI_ACCESS_DENIED         RETURN_ACCESS_DENIED        
+#define EFI_NO_RESPONSE           RETURN_NO_RESPONSE          
+#define EFI_NO_MAPPING            RETURN_NO_MAPPING           
+#define EFI_TIMEOUT               RETURN_TIMEOUT              
+#define EFI_NOT_STARTED           RETURN_NOT_STARTED          
+#define EFI_ALREADY_STARTED       RETURN_ALREADY_STARTED      
+#define EFI_ABORTED               RETURN_ABORTED              
+#define EFI_ICMP_ERROR            RETURN_ICMP_ERROR           
+#define EFI_TFTP_ERROR            RETURN_TFTP_ERROR           
+#define EFI_PROTOCOL_ERROR        RETURN_PROTOCOL_ERROR       
+#define EFI_INCOMPATIBLE_VERSION  RETURN_INCOMPATIBLE_VERSION 
+#define EFI_SECURITY_VIOLATION    RETURN_SECURITY_VIOLATION   
+#define EFI_CRC_ERROR             RETURN_CRC_ERROR   
+#define EFI_END_OF_MEDIA          RETURN_END_OF_MEDIA
+#define EFI_END_OF_FILE           RETURN_END_OF_FILE
+#define EFI_INVALID_LANGUAGE      RETURN_INVALID_LANGUAGE
+#define EFI_COMPROMISED_DATA      RETURN_COMPROMISED_DATA
+#define EFI_HTTP_ERROR            RETURN_HTTP_ERROR
+
+#define EFI_WARN_UNKNOWN_GLYPH    RETURN_WARN_UNKNOWN_GLYPH   
+#define EFI_WARN_DELETE_FAILURE   RETURN_WARN_DELETE_FAILURE  
+#define EFI_WARN_WRITE_FAILURE    RETURN_WARN_WRITE_FAILURE   
+#define EFI_WARN_BUFFER_TOO_SMALL RETURN_WARN_BUFFER_TOO_SMALL
+#define EFI_WARN_STALE_DATA       RETURN_WARN_STALE_DATA
+#define EFI_WARN_FILE_SYSTEM      RETURN_WARN_FILE_SYSTEM
+///@}
+
+///
+/// Define macro to encode the status code.
+/// 
+#define EFIERR(_a)                ENCODE_ERROR(_a)
+
+#define EFI_ERROR(A)              RETURN_ERROR(A)
+
+///
+/// ICMP error definitions
+///@{
+#define EFI_NETWORK_UNREACHABLE   EFIERR(100)
+#define EFI_HOST_UNREACHABLE      EFIERR(101) 
+#define EFI_PROTOCOL_UNREACHABLE  EFIERR(102)
+#define EFI_PORT_UNREACHABLE      EFIERR(103)
+///@}
+
+///
+/// Tcp connection status definitions
+///@{
+#define EFI_CONNECTION_FIN        EFIERR(104)
+#define EFI_CONNECTION_RESET      EFIERR(105)
+#define EFI_CONNECTION_REFUSED    EFIERR(106)
+///@}
+
+//
+// The EFI memory allocation functions work in units of EFI_PAGEs that are
+// 4KB. This should in no way be confused with the page size of the processor.
+// An EFI_PAGE is just the quanta of memory in EFI.
+//
+#define EFI_PAGE_SIZE             SIZE_4KB
+#define EFI_PAGE_MASK             0xFFF
+#define EFI_PAGE_SHIFT            12
+
+/**
+  Macro that converts a size, in bytes, to a number of EFI_PAGESs.
+
+  @param  Size      A size in bytes.  This parameter is assumed to be type UINTN.  
+                    Passing in a parameter that is larger than UINTN may produce 
+                    unexpected results.
+
+  @return  The number of EFI_PAGESs associated with the number of bytes specified
+           by Size.
+
+**/
+#define EFI_SIZE_TO_PAGES(Size)  (((Size) >> EFI_PAGE_SHIFT) + (((Size) & EFI_PAGE_MASK) ? 1 : 0))
+
+/**
+  Macro that converts a number of EFI_PAGEs to a size in bytes.
+
+  @param  Pages     The number of EFI_PAGES.  This parameter is assumed to be 
+                    type UINTN.  Passing in a parameter that is larger than 
+                    UINTN may produce unexpected results.
+
+  @return  The number of bytes associated with the number of EFI_PAGEs specified 
+           by Pages.
+  
+**/
+#define EFI_PAGES_TO_SIZE(Pages)  ((Pages) << EFI_PAGE_SHIFT)
+
+///
+/// PE32+ Machine type for IA32 UEFI images.
+///
+#define EFI_IMAGE_MACHINE_IA32            0x014C
+
+///
+/// PE32+ Machine type for IA64 UEFI images.
+///
+#define EFI_IMAGE_MACHINE_IA64            0x0200
+
+///
+/// PE32+ Machine type for EBC UEFI images.
+///
+#define EFI_IMAGE_MACHINE_EBC             0x0EBC
+
+///
+/// PE32+ Machine type for X64 UEFI images.
+///
+#define EFI_IMAGE_MACHINE_X64             0x8664
+
+///
+/// PE32+ Machine type for ARM mixed ARM and Thumb/Thumb2 images.
+///
+#define EFI_IMAGE_MACHINE_ARMTHUMB_MIXED  0x01C2
+
+///
+/// PE32+ Machine type for AARCH64 A64 images.
+///
+#define EFI_IMAGE_MACHINE_AARCH64  0xAA64
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Spacing [0, 704] <code>/** @file<span><pre>/** @file
+  Defines data types and constants introduced in UEFI.
+
+Copyright (c) 2006 - 2017, Intel Corporation. All rights reserved.<BR>
+Portions copyright (c) 2011 - 2016, ARM Ltd. All rights reserved.<BR>
+
+This program and the accompanying materials are licensed and made available under 
+the terms and conditions of the BSD License that accompanies this distribution.  
+The full text of the license may be found at
+http://opensource.org/licenses/bsd-license.php.                                          
+    
+THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "AS IS" BASIS,                     
+WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
+
+**/
+
+</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UnrecognisedDecl [704, 958] <code>#ifndef __UEFI_BASETYPE_H__<span><pre>#ifndef __UEFI_BASETYPE_H__
+#define __UEFI_BASETYPE_H__
+
+#include <Base.h>
+
+//
+// Basic data type definitions introduced in UEFI.
+//
+
+///
+/// 128-bit buffer containing a unique identifier value.
+///
+typedef GUID                      EFI_GUID;</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.Spacing [958, 1011] <code><span><pre>
+///
+/// Function return status for EFI API.
+///
+</pre></span></code></summary>
+</details>
+<details><summary>CCode.AliasTypedef [1011, 1056] <code>typedef RETURN_STATUS             EFI_STATUS;<span><pre>typedef RETURN_STATUS             EFI_STATUS;</pre></span></code></summary>
+<details><summary>CCode.Type [1019, 1032] <code>RETURN_STATUS<span><pre>RETURN_STATUS</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [1019, 1032] <code>RETURN_STATUS<span><pre>RETURN_STATUS</pre></span></code></summary>
+</details>
+</details>
+<details class="leaf"><summary>CCode.Identifier [1045, 1055] <code>EFI_STATUS<span><pre>EFI_STATUS</pre></span></code></summary>
+</details>
+</details>
+<details class="leaf"><summary>CCode.Spacing [1056, 1109] <code><span><pre>
+///
+/// A collection of related interfaces.
+///
+</pre></span></code></summary>
+</details>
+<details><summary>CCode.AliasTypedef [1109, 1155] <code>typedef VOID                      *EFI_HANDLE;<span><pre>typedef VOID                      *EFI_HANDLE;</pre></span></code></summary>
+<details><summary>CCode.Type [1117, 1144] <code>VOID                      *<span><pre>VOID                      *</pre></span></code></summary>
+<details><summary>CCode.Pointer [1117, 1144] <code>VOID                      *<span><pre>VOID                      *</pre></span></code></summary>
+<details><summary>CCode.Type [1117, 1121] <code>VOID<span><pre>VOID</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [1117, 1121] <code>VOID<span><pre>VOID</pre></span></code></summary>
+</details>
+</details>
+</details>
+</details>
+<details class="leaf"><summary>CCode.Identifier [1144, 1154] <code>EFI_HANDLE<span><pre>EFI_HANDLE</pre></span></code></summary>
+</details>
+</details>
+<details class="leaf"><summary>CCode.Spacing [1155, 1202] <code><span><pre>
+///
+/// Handle to an event structure.
+///
+</pre></span></code></summary>
+</details>
+<details><summary>CCode.AliasTypedef [1202, 1247] <code>typedef VOID                      *EFI_EVENT;<span><pre>typedef VOID                      *EFI_EVENT;</pre></span></code></summary>
+<details><summary>CCode.Type [1210, 1237] <code>VOID                      *<span><pre>VOID                      *</pre></span></code></summary>
+<details><summary>CCode.Pointer [1210, 1237] <code>VOID                      *<span><pre>VOID                      *</pre></span></code></summary>
+<details><summary>CCode.Type [1210, 1214] <code>VOID<span><pre>VOID</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [1210, 1214] <code>VOID<span><pre>VOID</pre></span></code></summary>
+</details>
+</details>
+</details>
+</details>
+<details class="leaf"><summary>CCode.Identifier [1237, 1246] <code>EFI_EVENT<span><pre>EFI_EVENT</pre></span></code></summary>
+</details>
+</details>
+<details class="leaf"><summary>CCode.Spacing [1247, 1285] <code><span><pre>
+///
+/// Task priority level.
+///
+</pre></span></code></summary>
+</details>
+<details><summary>CCode.AliasTypedef [1285, 1327] <code>typedef UINTN                     EFI_TPL;<span><pre>typedef UINTN                     EFI_TPL;</pre></span></code></summary>
+<details><summary>CCode.Type [1293, 1298] <code>UINTN<span><pre>UINTN</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [1293, 1298] <code>UINTN<span><pre>UINTN</pre></span></code></summary>
+</details>
+</details>
+<details class="leaf"><summary>CCode.Identifier [1319, 1326] <code>EFI_TPL<span><pre>EFI_TPL</pre></span></code></summary>
+</details>
+</details>
+<details class="leaf"><summary>CCode.Spacing [1327, 1367] <code><span><pre>
+///
+/// Logical block address.
+///
+</pre></span></code></summary>
+</details>
+<details><summary>CCode.AliasTypedef [1367, 1409] <code>typedef UINT64                    EFI_LBA;<span><pre>typedef UINT64                    EFI_LBA;</pre></span></code></summary>
+<details><summary>CCode.Type [1375, 1381] <code>UINT64<span><pre>UINT64</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [1375, 1381] <code>UINT64<span><pre>UINT64</pre></span></code></summary>
+</details>
+</details>
+<details class="leaf"><summary>CCode.Identifier [1401, 1408] <code>EFI_LBA<span><pre>EFI_LBA</pre></span></code></summary>
+</details>
+</details>
+<details class="leaf"><summary>CCode.Spacing [1409, 1460] <code><span><pre>
+
+///
+/// 64-bit physical memory address.
+///
+</pre></span></code></summary>
+</details>
+<details><summary>CCode.AliasTypedef [1460, 1515] <code>typedef UINT64                    EFI_PHYSICAL_ADDRESS;<span><pre>typedef UINT64                    EFI_PHYSICAL_ADDRESS;</pre></span></code></summary>
+<details><summary>CCode.Type [1468, 1474] <code>UINT64<span><pre>UINT64</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [1468, 1474] <code>UINT64<span><pre>UINT64</pre></span></code></summary>
+</details>
+</details>
+<details class="leaf"><summary>CCode.Identifier [1494, 1514] <code>EFI_PHYSICAL_ADDRESS<span><pre>EFI_PHYSICAL_ADDRESS</pre></span></code></summary>
+</details>
+</details>
+<details class="leaf"><summary>CCode.Spacing [1515, 1565] <code><span><pre>
+
+///
+/// 64-bit virtual memory address.
+///
+</pre></span></code></summary>
+</details>
+<details><summary>CCode.AliasTypedef [1565, 1619] <code>typedef UINT64                    EFI_VIRTUAL_ADDRESS;<span><pre>typedef UINT64                    EFI_VIRTUAL_ADDRESS;</pre></span></code></summary>
+<details><summary>CCode.Type [1573, 1579] <code>UINT64<span><pre>UINT64</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [1573, 1579] <code>UINT64<span><pre>UINT64</pre></span></code></summary>
+</details>
+</details>
+<details class="leaf"><summary>CCode.Identifier [1599, 1618] <code>EFI_VIRTUAL_ADDRESS<span><pre>EFI_VIRTUAL_ADDRESS</pre></span></code></summary>
+</details>
+</details>
+<details class="leaf"><summary>CCode.Spacing [1619, 1889] <code><span><pre>
+
+///
+/// EFI Time Abstraction:
+///  Year:       1900 - 9999
+///  Month:      1 - 12
+///  Day:        1 - 31
+///  Hour:       0 - 23
+///  Minute:     0 - 59
+///  Second:     0 - 59
+///  Nanosecond: 0 - 999,999,999
+///  TimeZone:   -1440 to 1440 or 2047
+///
+</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UnrecognisedDecl [1889, 1922] <code>typedef struct {<span><pre>typedef struct {
+  UINT16  Year;</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UnrecognisedDecl [1926, 1940] <code>UINT8   Month;<span><pre>UINT8   Month;</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UnrecognisedDecl [1944, 1956] <code>UINT8   Day;<span><pre>UINT8   Day;</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UnrecognisedDecl [1960, 1973] <code>UINT8   Hour;<span><pre>UINT8   Hour;</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UnrecognisedDecl [1977, 1992] <code>UINT8   Minute;<span><pre>UINT8   Minute;</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UnrecognisedDecl [1996, 2011] <code>UINT8   Second;<span><pre>UINT8   Second;</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UnrecognisedDecl [2015, 2028] <code>UINT8   Pad1;<span><pre>UINT8   Pad1;</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UnrecognisedDecl [2032, 2051] <code>UINT32  Nanosecond;<span><pre>UINT32  Nanosecond;</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UnrecognisedDecl [2055, 2072] <code>INT16   TimeZone;<span><pre>INT16   TimeZone;</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UnrecognisedDecl [2076, 2093] <code>UINT8   Daylight;<span><pre>UINT8   Daylight;</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UnrecognisedDecl [2097, 2110] <code>UINT8   Pad2;<span><pre>UINT8   Pad2;</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UnrecognisedDecl [2112, 2123] <code>} EFI_TIME;<span><pre>} EFI_TIME;</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.Spacing [2123, 2194] <code><span><pre>
+
+
+///
+/// 4-byte buffer. An IPv4 internet protocol address.
+///
+</pre></span></code></summary>
+</details>
+<details><summary>CCode.AliasTypedef [2194, 2232] <code>typedef IPv4_ADDRESS EFI_IPv4_ADDRESS;<span><pre>typedef IPv4_ADDRESS EFI_IPv4_ADDRESS;</pre></span></code></summary>
+<details><summary>CCode.Type [2202, 2214] <code>IPv4_ADDRESS<span><pre>IPv4_ADDRESS</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [2202, 2214] <code>IPv4_ADDRESS<span><pre>IPv4_ADDRESS</pre></span></code></summary>
+</details>
+</details>
+<details class="leaf"><summary>CCode.Identifier [2215, 2231] <code>EFI_IPv4_ADDRESS<span><pre>EFI_IPv4_ADDRESS</pre></span></code></summary>
+</details>
+</details>
+<details class="leaf"><summary>CCode.Spacing [2232, 2302] <code><span><pre>
+
+///
+/// 16-byte buffer. An IPv6 internet protocol address.
+///
+</pre></span></code></summary>
+</details>
+<details><summary>CCode.AliasTypedef [2302, 2340] <code>typedef IPv6_ADDRESS EFI_IPv6_ADDRESS;<span><pre>typedef IPv6_ADDRESS EFI_IPv6_ADDRESS;</pre></span></code></summary>
+<details><summary>CCode.Type [2310, 2322] <code>IPv6_ADDRESS<span><pre>IPv6_ADDRESS</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [2310, 2322] <code>IPv6_ADDRESS<span><pre>IPv6_ADDRESS</pre></span></code></summary>
+</details>
+</details>
+<details class="leaf"><summary>CCode.Identifier [2323, 2339] <code>EFI_IPv6_ADDRESS<span><pre>EFI_IPv6_ADDRESS</pre></span></code></summary>
+</details>
+</details>
+<details class="leaf"><summary>CCode.Spacing [2340, 2425] <code><span><pre>
+
+///
+/// 32-byte buffer containing a network Media Access Control address.
+///
+</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UnrecognisedDecl [2425, 2460] <code>typedef struct {<span><pre>typedef struct {
+  UINT8 Addr[32];</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UnrecognisedDecl [2462, 2480] <code>} EFI_MAC_ADDRESS;<span><pre>} EFI_MAC_ADDRESS;</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.Spacing [2480, 2592] <code><span><pre>
+
+///
+/// 16-byte buffer aligned on a 4-byte boundary.
+/// An IPv4 or IPv6 internet protocol address.
+///
+</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UnrecognisedDecl [2592, 2637] <code>typedef union {<span><pre>typedef union {
+  UINT32            Addr[4];</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UnrecognisedDecl [2641, 2662] <code>EFI_IPv4_ADDRESS  v4;<span><pre>EFI_IPv4_ADDRESS  v4;</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UnrecognisedDecl [2666, 2687] <code>EFI_IPv6_ADDRESS  v6;<span><pre>EFI_IPv6_ADDRESS  v6;</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UnrecognisedDecl [2689, 2706] <code>} EFI_IP_ADDRESS;<span><pre>} EFI_IP_ADDRESS;</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.Spacing [2706, 2757] <code><span><pre>
+
+
+///
+/// Enumeration of EFI_STATUS.
+///@{ 
+</pre></span></code></summary>
+</details>
+<details><summary>CCode.DefineConstant [2757, 2821] <code>#define EFI_SUCCESS               RETURN_SUCCESS              <span><pre>#define EFI_SUCCESS               RETURN_SUCCESS              
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [2765, 2776] <code>EFI_SUCCESS<span><pre>EFI_SUCCESS</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [2791, 2821] <code>RETURN_SUCCESS              <span><pre>RETURN_SUCCESS              
+</pre></span></code></summary>
+</details>
+</details>
+<details><summary>CCode.DefineConstant [2821, 2885] <code>#define EFI_LOAD_ERROR            RETURN_LOAD_ERROR           <span><pre>#define EFI_LOAD_ERROR            RETURN_LOAD_ERROR           
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [2829, 2843] <code>EFI_LOAD_ERROR<span><pre>EFI_LOAD_ERROR</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [2855, 2885] <code>RETURN_LOAD_ERROR           <span><pre>RETURN_LOAD_ERROR           
+</pre></span></code></summary>
+</details>
+</details>
+<details><summary>CCode.DefineConstant [2885, 2949] <code>#define EFI_INVALID_PARAMETER     RETURN_INVALID_PARAMETER    <span><pre>#define EFI_INVALID_PARAMETER     RETURN_INVALID_PARAMETER    
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [2893, 2914] <code>EFI_INVALID_PARAMETER<span><pre>EFI_INVALID_PARAMETER</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [2919, 2949] <code>RETURN_INVALID_PARAMETER    <span><pre>RETURN_INVALID_PARAMETER    
+</pre></span></code></summary>
+</details>
+</details>
+<details><summary>CCode.DefineConstant [2949, 3013] <code>#define EFI_UNSUPPORTED           RETURN_UNSUPPORTED          <span><pre>#define EFI_UNSUPPORTED           RETURN_UNSUPPORTED          
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [2957, 2972] <code>EFI_UNSUPPORTED<span><pre>EFI_UNSUPPORTED</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [2983, 3013] <code>RETURN_UNSUPPORTED          <span><pre>RETURN_UNSUPPORTED          
+</pre></span></code></summary>
+</details>
+</details>
+<details><summary>CCode.DefineConstant [3013, 3077] <code>#define EFI_BAD_BUFFER_SIZE       RETURN_BAD_BUFFER_SIZE      <span><pre>#define EFI_BAD_BUFFER_SIZE       RETURN_BAD_BUFFER_SIZE      
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [3021, 3040] <code>EFI_BAD_BUFFER_SIZE<span><pre>EFI_BAD_BUFFER_SIZE</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [3047, 3077] <code>RETURN_BAD_BUFFER_SIZE      <span><pre>RETURN_BAD_BUFFER_SIZE      
+</pre></span></code></summary>
+</details>
+</details>
+<details><summary>CCode.DefineConstant [3077, 3141] <code>#define EFI_BUFFER_TOO_SMALL      RETURN_BUFFER_TOO_SMALL     <span><pre>#define EFI_BUFFER_TOO_SMALL      RETURN_BUFFER_TOO_SMALL     
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [3085, 3105] <code>EFI_BUFFER_TOO_SMALL<span><pre>EFI_BUFFER_TOO_SMALL</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [3111, 3141] <code>RETURN_BUFFER_TOO_SMALL     <span><pre>RETURN_BUFFER_TOO_SMALL     
+</pre></span></code></summary>
+</details>
+</details>
+<details><summary>CCode.DefineConstant [3141, 3205] <code>#define EFI_NOT_READY             RETURN_NOT_READY            <span><pre>#define EFI_NOT_READY             RETURN_NOT_READY            
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [3149, 3162] <code>EFI_NOT_READY<span><pre>EFI_NOT_READY</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [3175, 3205] <code>RETURN_NOT_READY            <span><pre>RETURN_NOT_READY            
+</pre></span></code></summary>
+</details>
+</details>
+<details><summary>CCode.DefineConstant [3205, 3269] <code>#define EFI_DEVICE_ERROR          RETURN_DEVICE_ERROR         <span><pre>#define EFI_DEVICE_ERROR          RETURN_DEVICE_ERROR         
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [3213, 3229] <code>EFI_DEVICE_ERROR<span><pre>EFI_DEVICE_ERROR</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [3239, 3269] <code>RETURN_DEVICE_ERROR         <span><pre>RETURN_DEVICE_ERROR         
+</pre></span></code></summary>
+</details>
+</details>
+<details><summary>CCode.DefineConstant [3269, 3333] <code>#define EFI_WRITE_PROTECTED       RETURN_WRITE_PROTECTED      <span><pre>#define EFI_WRITE_PROTECTED       RETURN_WRITE_PROTECTED      
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [3277, 3296] <code>EFI_WRITE_PROTECTED<span><pre>EFI_WRITE_PROTECTED</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [3303, 3333] <code>RETURN_WRITE_PROTECTED      <span><pre>RETURN_WRITE_PROTECTED      
+</pre></span></code></summary>
+</details>
+</details>
+<details><summary>CCode.DefineConstant [3333, 3397] <code>#define EFI_OUT_OF_RESOURCES      RETURN_OUT_OF_RESOURCES     <span><pre>#define EFI_OUT_OF_RESOURCES      RETURN_OUT_OF_RESOURCES     
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [3341, 3361] <code>EFI_OUT_OF_RESOURCES<span><pre>EFI_OUT_OF_RESOURCES</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [3367, 3397] <code>RETURN_OUT_OF_RESOURCES     <span><pre>RETURN_OUT_OF_RESOURCES     
+</pre></span></code></summary>
+</details>
+</details>
+<details><summary>CCode.DefineConstant [3397, 3461] <code>#define EFI_VOLUME_CORRUPTED      RETURN_VOLUME_CORRUPTED     <span><pre>#define EFI_VOLUME_CORRUPTED      RETURN_VOLUME_CORRUPTED     
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [3405, 3425] <code>EFI_VOLUME_CORRUPTED<span><pre>EFI_VOLUME_CORRUPTED</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [3431, 3461] <code>RETURN_VOLUME_CORRUPTED     <span><pre>RETURN_VOLUME_CORRUPTED     
+</pre></span></code></summary>
+</details>
+</details>
+<details><summary>CCode.DefineConstant [3461, 3525] <code>#define EFI_VOLUME_FULL           RETURN_VOLUME_FULL          <span><pre>#define EFI_VOLUME_FULL           RETURN_VOLUME_FULL          
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [3469, 3484] <code>EFI_VOLUME_FULL<span><pre>EFI_VOLUME_FULL</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [3495, 3525] <code>RETURN_VOLUME_FULL          <span><pre>RETURN_VOLUME_FULL          
+</pre></span></code></summary>
+</details>
+</details>
+<details><summary>CCode.DefineConstant [3525, 3589] <code>#define EFI_NO_MEDIA              RETURN_NO_MEDIA             <span><pre>#define EFI_NO_MEDIA              RETURN_NO_MEDIA             
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [3533, 3545] <code>EFI_NO_MEDIA<span><pre>EFI_NO_MEDIA</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [3559, 3589] <code>RETURN_NO_MEDIA             <span><pre>RETURN_NO_MEDIA             
+</pre></span></code></summary>
+</details>
+</details>
+<details><summary>CCode.DefineConstant [3589, 3653] <code>#define EFI_MEDIA_CHANGED         RETURN_MEDIA_CHANGED        <span><pre>#define EFI_MEDIA_CHANGED         RETURN_MEDIA_CHANGED        
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [3597, 3614] <code>EFI_MEDIA_CHANGED<span><pre>EFI_MEDIA_CHANGED</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [3623, 3653] <code>RETURN_MEDIA_CHANGED        <span><pre>RETURN_MEDIA_CHANGED        
+</pre></span></code></summary>
+</details>
+</details>
+<details><summary>CCode.DefineConstant [3653, 3717] <code>#define EFI_NOT_FOUND             RETURN_NOT_FOUND            <span><pre>#define EFI_NOT_FOUND             RETURN_NOT_FOUND            
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [3661, 3674] <code>EFI_NOT_FOUND<span><pre>EFI_NOT_FOUND</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [3687, 3717] <code>RETURN_NOT_FOUND            <span><pre>RETURN_NOT_FOUND            
+</pre></span></code></summary>
+</details>
+</details>
+<details><summary>CCode.DefineConstant [3717, 3781] <code>#define EFI_ACCESS_DENIED         RETURN_ACCESS_DENIED        <span><pre>#define EFI_ACCESS_DENIED         RETURN_ACCESS_DENIED        
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [3725, 3742] <code>EFI_ACCESS_DENIED<span><pre>EFI_ACCESS_DENIED</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [3751, 3781] <code>RETURN_ACCESS_DENIED        <span><pre>RETURN_ACCESS_DENIED        
+</pre></span></code></summary>
+</details>
+</details>
+<details><summary>CCode.DefineConstant [3781, 3845] <code>#define EFI_NO_RESPONSE           RETURN_NO_RESPONSE          <span><pre>#define EFI_NO_RESPONSE           RETURN_NO_RESPONSE          
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [3789, 3804] <code>EFI_NO_RESPONSE<span><pre>EFI_NO_RESPONSE</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [3815, 3845] <code>RETURN_NO_RESPONSE          <span><pre>RETURN_NO_RESPONSE          
+</pre></span></code></summary>
+</details>
+</details>
+<details><summary>CCode.DefineConstant [3845, 3909] <code>#define EFI_NO_MAPPING            RETURN_NO_MAPPING           <span><pre>#define EFI_NO_MAPPING            RETURN_NO_MAPPING           
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [3853, 3867] <code>EFI_NO_MAPPING<span><pre>EFI_NO_MAPPING</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [3879, 3909] <code>RETURN_NO_MAPPING           <span><pre>RETURN_NO_MAPPING           
+</pre></span></code></summary>
+</details>
+</details>
+<details><summary>CCode.DefineConstant [3909, 3973] <code>#define EFI_TIMEOUT               RETURN_TIMEOUT              <span><pre>#define EFI_TIMEOUT               RETURN_TIMEOUT              
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [3917, 3928] <code>EFI_TIMEOUT<span><pre>EFI_TIMEOUT</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [3943, 3973] <code>RETURN_TIMEOUT              <span><pre>RETURN_TIMEOUT              
+</pre></span></code></summary>
+</details>
+</details>
+<details><summary>CCode.DefineConstant [3973, 4037] <code>#define EFI_NOT_STARTED           RETURN_NOT_STARTED          <span><pre>#define EFI_NOT_STARTED           RETURN_NOT_STARTED          
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [3981, 3996] <code>EFI_NOT_STARTED<span><pre>EFI_NOT_STARTED</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [4007, 4037] <code>RETURN_NOT_STARTED          <span><pre>RETURN_NOT_STARTED          
+</pre></span></code></summary>
+</details>
+</details>
+<details><summary>CCode.DefineConstant [4037, 4101] <code>#define EFI_ALREADY_STARTED       RETURN_ALREADY_STARTED      <span><pre>#define EFI_ALREADY_STARTED       RETURN_ALREADY_STARTED      
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [4045, 4064] <code>EFI_ALREADY_STARTED<span><pre>EFI_ALREADY_STARTED</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [4071, 4101] <code>RETURN_ALREADY_STARTED      <span><pre>RETURN_ALREADY_STARTED      
+</pre></span></code></summary>
+</details>
+</details>
+<details><summary>CCode.DefineConstant [4101, 4165] <code>#define EFI_ABORTED               RETURN_ABORTED              <span><pre>#define EFI_ABORTED               RETURN_ABORTED              
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [4109, 4120] <code>EFI_ABORTED<span><pre>EFI_ABORTED</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [4135, 4165] <code>RETURN_ABORTED              <span><pre>RETURN_ABORTED              
+</pre></span></code></summary>
+</details>
+</details>
+<details><summary>CCode.DefineConstant [4165, 4229] <code>#define EFI_ICMP_ERROR            RETURN_ICMP_ERROR           <span><pre>#define EFI_ICMP_ERROR            RETURN_ICMP_ERROR           
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [4173, 4187] <code>EFI_ICMP_ERROR<span><pre>EFI_ICMP_ERROR</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [4199, 4229] <code>RETURN_ICMP_ERROR           <span><pre>RETURN_ICMP_ERROR           
+</pre></span></code></summary>
+</details>
+</details>
+<details><summary>CCode.DefineConstant [4229, 4293] <code>#define EFI_TFTP_ERROR            RETURN_TFTP_ERROR           <span><pre>#define EFI_TFTP_ERROR            RETURN_TFTP_ERROR           
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [4237, 4251] <code>EFI_TFTP_ERROR<span><pre>EFI_TFTP_ERROR</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [4263, 4293] <code>RETURN_TFTP_ERROR           <span><pre>RETURN_TFTP_ERROR           
+</pre></span></code></summary>
+</details>
+</details>
+<details><summary>CCode.DefineConstant [4293, 4357] <code>#define EFI_PROTOCOL_ERROR        RETURN_PROTOCOL_ERROR       <span><pre>#define EFI_PROTOCOL_ERROR        RETURN_PROTOCOL_ERROR       
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [4301, 4319] <code>EFI_PROTOCOL_ERROR<span><pre>EFI_PROTOCOL_ERROR</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [4327, 4357] <code>RETURN_PROTOCOL_ERROR       <span><pre>RETURN_PROTOCOL_ERROR       
+</pre></span></code></summary>
+</details>
+</details>
+<details><summary>CCode.DefineConstant [4357, 4421] <code>#define EFI_INCOMPATIBLE_VERSION  RETURN_INCOMPATIBLE_VERSION <span><pre>#define EFI_INCOMPATIBLE_VERSION  RETURN_INCOMPATIBLE_VERSION 
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [4365, 4389] <code>EFI_INCOMPATIBLE_VERSION<span><pre>EFI_INCOMPATIBLE_VERSION</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [4391, 4421] <code>RETURN_INCOMPATIBLE_VERSION <span><pre>RETURN_INCOMPATIBLE_VERSION 
+</pre></span></code></summary>
+</details>
+</details>
+<details><summary>CCode.DefineConstant [4421, 4485] <code>#define EFI_SECURITY_VIOLATION    RETURN_SECURITY_VIOLATION   <span><pre>#define EFI_SECURITY_VIOLATION    RETURN_SECURITY_VIOLATION   
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [4429, 4451] <code>EFI_SECURITY_VIOLATION<span><pre>EFI_SECURITY_VIOLATION</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [4455, 4485] <code>RETURN_SECURITY_VIOLATION   <span><pre>RETURN_SECURITY_VIOLATION   
+</pre></span></code></summary>
+</details>
+</details>
+<details><summary>CCode.DefineConstant [4485, 4540] <code>#define EFI_CRC_ERROR             RETURN_CRC_ERROR   <span><pre>#define EFI_CRC_ERROR             RETURN_CRC_ERROR   
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [4493, 4506] <code>EFI_CRC_ERROR<span><pre>EFI_CRC_ERROR</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [4519, 4540] <code>RETURN_CRC_ERROR   <span><pre>RETURN_CRC_ERROR   
+</pre></span></code></summary>
+</details>
+</details>
+<details><summary>CCode.DefineConstant [4540, 4595] <code>#define EFI_END_OF_MEDIA          RETURN_END_OF_MEDIA<span><pre>#define EFI_END_OF_MEDIA          RETURN_END_OF_MEDIA
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [4548, 4564] <code>EFI_END_OF_MEDIA<span><pre>EFI_END_OF_MEDIA</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [4574, 4595] <code>RETURN_END_OF_MEDIA<span><pre>RETURN_END_OF_MEDIA
+</pre></span></code></summary>
+</details>
+</details>
+<details><summary>CCode.DefineConstant [4595, 4649] <code>#define EFI_END_OF_FILE           RETURN_END_OF_FILE<span><pre>#define EFI_END_OF_FILE           RETURN_END_OF_FILE
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [4603, 4618] <code>EFI_END_OF_FILE<span><pre>EFI_END_OF_FILE</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [4629, 4649] <code>RETURN_END_OF_FILE<span><pre>RETURN_END_OF_FILE
+</pre></span></code></summary>
+</details>
+</details>
+<details><summary>CCode.DefineConstant [4649, 4708] <code>#define EFI_INVALID_LANGUAGE      RETURN_INVALID_LANGUAGE<span><pre>#define EFI_INVALID_LANGUAGE      RETURN_INVALID_LANGUAGE
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [4657, 4677] <code>EFI_INVALID_LANGUAGE<span><pre>EFI_INVALID_LANGUAGE</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [4683, 4708] <code>RETURN_INVALID_LANGUAGE<span><pre>RETURN_INVALID_LANGUAGE
+</pre></span></code></summary>
+</details>
+</details>
+<details><summary>CCode.DefineConstant [4708, 4767] <code>#define EFI_COMPROMISED_DATA      RETURN_COMPROMISED_DATA<span><pre>#define EFI_COMPROMISED_DATA      RETURN_COMPROMISED_DATA
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [4716, 4736] <code>EFI_COMPROMISED_DATA<span><pre>EFI_COMPROMISED_DATA</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [4742, 4767] <code>RETURN_COMPROMISED_DATA<span><pre>RETURN_COMPROMISED_DATA
+</pre></span></code></summary>
+</details>
+</details>
+<details><summary>CCode.DefineConstant [4767, 4820] <code>#define EFI_HTTP_ERROR            RETURN_HTTP_ERROR<span><pre>#define EFI_HTTP_ERROR            RETURN_HTTP_ERROR
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [4775, 4789] <code>EFI_HTTP_ERROR<span><pre>EFI_HTTP_ERROR</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [4801, 4820] <code>RETURN_HTTP_ERROR<span><pre>RETURN_HTTP_ERROR
+</pre></span></code></summary>
+</details>
+</details>
+<details><summary>CCode.DefineConstant [4822, 4886] <code>#define EFI_WARN_UNKNOWN_GLYPH    RETURN_WARN_UNKNOWN_GLYPH   <span><pre>#define EFI_WARN_UNKNOWN_GLYPH    RETURN_WARN_UNKNOWN_GLYPH   
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [4830, 4852] <code>EFI_WARN_UNKNOWN_GLYPH<span><pre>EFI_WARN_UNKNOWN_GLYPH</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [4856, 4886] <code>RETURN_WARN_UNKNOWN_GLYPH   <span><pre>RETURN_WARN_UNKNOWN_GLYPH   
+</pre></span></code></summary>
+</details>
+</details>
+<details><summary>CCode.DefineConstant [4886, 4950] <code>#define EFI_WARN_DELETE_FAILURE   RETURN_WARN_DELETE_FAILURE  <span><pre>#define EFI_WARN_DELETE_FAILURE   RETURN_WARN_DELETE_FAILURE  
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [4894, 4917] <code>EFI_WARN_DELETE_FAILURE<span><pre>EFI_WARN_DELETE_FAILURE</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [4920, 4950] <code>RETURN_WARN_DELETE_FAILURE  <span><pre>RETURN_WARN_DELETE_FAILURE  
+</pre></span></code></summary>
+</details>
+</details>
+<details><summary>CCode.DefineConstant [4950, 5014] <code>#define EFI_WARN_WRITE_FAILURE    RETURN_WARN_WRITE_FAILURE   <span><pre>#define EFI_WARN_WRITE_FAILURE    RETURN_WARN_WRITE_FAILURE   
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [4958, 4980] <code>EFI_WARN_WRITE_FAILURE<span><pre>EFI_WARN_WRITE_FAILURE</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [4984, 5014] <code>RETURN_WARN_WRITE_FAILURE   <span><pre>RETURN_WARN_WRITE_FAILURE   
+</pre></span></code></summary>
+</details>
+</details>
+<details><summary>CCode.DefineConstant [5014, 5078] <code>#define EFI_WARN_BUFFER_TOO_SMALL RETURN_WARN_BUFFER_TOO_SMALL<span><pre>#define EFI_WARN_BUFFER_TOO_SMALL RETURN_WARN_BUFFER_TOO_SMALL
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [5022, 5047] <code>EFI_WARN_BUFFER_TOO_SMALL<span><pre>EFI_WARN_BUFFER_TOO_SMALL</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [5048, 5078] <code>RETURN_WARN_BUFFER_TOO_SMALL<span><pre>RETURN_WARN_BUFFER_TOO_SMALL
+</pre></span></code></summary>
+</details>
+</details>
+<details><summary>CCode.DefineConstant [5078, 5136] <code>#define EFI_WARN_STALE_DATA       RETURN_WARN_STALE_DATA<span><pre>#define EFI_WARN_STALE_DATA       RETURN_WARN_STALE_DATA
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [5086, 5105] <code>EFI_WARN_STALE_DATA<span><pre>EFI_WARN_STALE_DATA</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [5112, 5136] <code>RETURN_WARN_STALE_DATA<span><pre>RETURN_WARN_STALE_DATA
+</pre></span></code></summary>
+</details>
+</details>
+<details><summary>CCode.DefineConstant [5136, 5195] <code>#define EFI_WARN_FILE_SYSTEM      RETURN_WARN_FILE_SYSTEM<span><pre>#define EFI_WARN_FILE_SYSTEM      RETURN_WARN_FILE_SYSTEM
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [5144, 5164] <code>EFI_WARN_FILE_SYSTEM<span><pre>EFI_WARN_FILE_SYSTEM</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [5170, 5195] <code>RETURN_WARN_FILE_SYSTEM<span><pre>RETURN_WARN_FILE_SYSTEM
+</pre></span></code></summary>
+</details>
+</details>
+<details class="leaf"><summary>CCode.Spacing [5195, 5260] <code>///@}<span><pre>///@}
+
+///
+/// Define macro to encode the status code.
+/// 
+</pre></span></code></summary>
+</details>
+<details><summary>CCode.DefineMacro [5260, 5312] <code>#define EFIERR(_a)                ENCODE_ERROR(_a)<span><pre>#define EFIERR(_a)                ENCODE_ERROR(_a)
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [5268, 5274] <code>EFIERR<span><pre>EFIERR</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [5278, 5312] <code>                ENCODE_ERROR(_a)<span><pre>                ENCODE_ERROR(_a)
+</pre></span></code></summary>
+</details>
+</details>
+<details><summary>CCode.DefineMacro [5314, 5365] <code>#define EFI_ERROR(A)              RETURN_ERROR(A)<span><pre>#define EFI_ERROR(A)              RETURN_ERROR(A)
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [5322, 5331] <code>EFI_ERROR<span><pre>EFI_ERROR</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [5334, 5365] <code>              RETURN_ERROR(A)<span><pre>              RETURN_ERROR(A)
+</pre></span></code></summary>
+</details>
+</details>
+<details class="leaf"><summary>CCode.Spacing [5365, 5407] <code><span><pre>
+///
+/// ICMP error definitions
+///@{
+</pre></span></code></summary>
+</details>
+<details><summary>CCode.DefineConstant [5407, 5454] <code>#define EFI_NETWORK_UNREACHABLE   EFIERR(100)<span><pre>#define EFI_NETWORK_UNREACHABLE   EFIERR(100)
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [5415, 5438] <code>EFI_NETWORK_UNREACHABLE<span><pre>EFI_NETWORK_UNREACHABLE</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [5441, 5454] <code>EFIERR(100)<span><pre>EFIERR(100)
+</pre></span></code></summary>
+</details>
+</details>
+<details><summary>CCode.DefineConstant [5454, 5502] <code>#define EFI_HOST_UNREACHABLE      EFIERR(101) <span><pre>#define EFI_HOST_UNREACHABLE      EFIERR(101) 
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [5462, 5482] <code>EFI_HOST_UNREACHABLE<span><pre>EFI_HOST_UNREACHABLE</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [5488, 5502] <code>EFIERR(101) <span><pre>EFIERR(101) 
+</pre></span></code></summary>
+</details>
+</details>
+<details><summary>CCode.DefineConstant [5502, 5549] <code>#define EFI_PROTOCOL_UNREACHABLE  EFIERR(102)<span><pre>#define EFI_PROTOCOL_UNREACHABLE  EFIERR(102)
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [5510, 5534] <code>EFI_PROTOCOL_UNREACHABLE<span><pre>EFI_PROTOCOL_UNREACHABLE</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [5536, 5549] <code>EFIERR(102)<span><pre>EFIERR(102)
+</pre></span></code></summary>
+</details>
+</details>
+<details><summary>CCode.DefineConstant [5549, 5596] <code>#define EFI_PORT_UNREACHABLE      EFIERR(103)<span><pre>#define EFI_PORT_UNREACHABLE      EFIERR(103)
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [5557, 5577] <code>EFI_PORT_UNREACHABLE<span><pre>EFI_PORT_UNREACHABLE</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [5583, 5596] <code>EFIERR(103)<span><pre>EFIERR(103)
+</pre></span></code></summary>
+</details>
+</details>
+<details class="leaf"><summary>CCode.Spacing [5596, 5656] <code>///@}<span><pre>///@}
+
+///
+/// Tcp connection status definitions
+///@{
+</pre></span></code></summary>
+</details>
+<details><summary>CCode.DefineConstant [5656, 5703] <code>#define EFI_CONNECTION_FIN        EFIERR(104)<span><pre>#define EFI_CONNECTION_FIN        EFIERR(104)
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [5664, 5682] <code>EFI_CONNECTION_FIN<span><pre>EFI_CONNECTION_FIN</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [5690, 5703] <code>EFIERR(104)<span><pre>EFIERR(104)
+</pre></span></code></summary>
+</details>
+</details>
+<details><summary>CCode.DefineConstant [5703, 5750] <code>#define EFI_CONNECTION_RESET      EFIERR(105)<span><pre>#define EFI_CONNECTION_RESET      EFIERR(105)
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [5711, 5731] <code>EFI_CONNECTION_RESET<span><pre>EFI_CONNECTION_RESET</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [5737, 5750] <code>EFIERR(105)<span><pre>EFIERR(105)
+</pre></span></code></summary>
+</details>
+</details>
+<details><summary>CCode.DefineConstant [5750, 5797] <code>#define EFI_CONNECTION_REFUSED    EFIERR(106)<span><pre>#define EFI_CONNECTION_REFUSED    EFIERR(106)
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [5758, 5780] <code>EFI_CONNECTION_REFUSED<span><pre>EFI_CONNECTION_REFUSED</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [5784, 5797] <code>EFIERR(106)<span><pre>EFIERR(106)
+</pre></span></code></summary>
+</details>
+</details>
+<details class="leaf"><summary>CCode.Spacing [5797, 6023] <code>///@}<span><pre>///@}
+
+//
+// The EFI memory allocation functions work in units of EFI_PAGEs that are
+// 4KB. This should in no way be confused with the page size of the processor.
+// An EFI_PAGE is just the quanta of memory in EFI.
+//
+</pre></span></code></summary>
+</details>
+<details><summary>CCode.DefineConstant [6023, 6067] <code>#define EFI_PAGE_SIZE             SIZE_4KB<span><pre>#define EFI_PAGE_SIZE             SIZE_4KB
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [6031, 6044] <code>EFI_PAGE_SIZE<span><pre>EFI_PAGE_SIZE</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [6057, 6067] <code>SIZE_4KB<span><pre>SIZE_4KB
+</pre></span></code></summary>
+</details>
+</details>
+<details><summary>CCode.DefineConstant [6067, 6108] <code>#define EFI_PAGE_MASK             0xFFF<span><pre>#define EFI_PAGE_MASK             0xFFF
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [6075, 6088] <code>EFI_PAGE_MASK<span><pre>EFI_PAGE_MASK</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [6101, 6108] <code>0xFFF<span><pre>0xFFF
+</pre></span></code></summary>
+</details>
+</details>
+<details><summary>CCode.DefineConstant [6108, 6146] <code>#define EFI_PAGE_SHIFT            12<span><pre>#define EFI_PAGE_SHIFT            12
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [6116, 6130] <code>EFI_PAGE_SHIFT<span><pre>EFI_PAGE_SHIFT</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [6142, 6146] <code>12<span><pre>12
+</pre></span></code></summary>
+</details>
+</details>
+<details class="leaf"><summary>CCode.Spacing [6146, 6545] <code><span><pre>
+/**
+  Macro that converts a size, in bytes, to a number of EFI_PAGESs.
+
+  @param  Size      A size in bytes.  This parameter is assumed to be type UINTN.  
+                    Passing in a parameter that is larger than UINTN may produce 
+                    unexpected results.
+
+  @return  The number of EFI_PAGESs associated with the number of bytes specified
+           by Size.
+
+**/
+</pre></span></code></summary>
+</details>
+<details><summary>CCode.DefineMacro [6545, 6645] <code>#define EFI_SIZE_TO_PAGES(Size)  (((Size) >> EFI_PAGE_SHIFT) + (((Size) & EFI_PAGE_MASK) ? 1 : 0))<span><pre>#define EFI_SIZE_TO_PAGES(Size)  (((Size) >> EFI_PAGE_SHIFT) + (((Size) & EFI_PAGE_MASK) ? 1 : 0))
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [6553, 6570] <code>EFI_SIZE_TO_PAGES<span><pre>EFI_SIZE_TO_PAGES</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [6576, 6645] <code>  (((Size) >> EFI_PAGE_SHIFT) + (((Size) & EFI_PAGE_MASK) ? 1 : 0))<span><pre>  (((Size) >> EFI_PAGE_SHIFT) + (((Size) & EFI_PAGE_MASK) ? 1 : 0))
+</pre></span></code></summary>
+</details>
+</details>
+<details class="leaf"><summary>CCode.Spacing [6645, 7052] <code><span><pre>
+/**
+  Macro that converts a number of EFI_PAGEs to a size in bytes.
+
+  @param  Pages     The number of EFI_PAGES.  This parameter is assumed to be 
+                    type UINTN.  Passing in a parameter that is larger than 
+                    UINTN may produce unexpected results.
+
+  @return  The number of bytes associated with the number of EFI_PAGEs specified 
+           by Pages.
+  
+**/
+</pre></span></code></summary>
+</details>
+<details><summary>CCode.DefineMacro [7052, 7115] <code>#define EFI_PAGES_TO_SIZE(Pages)  ((Pages) << EFI_PAGE_SHIFT)<span><pre>#define EFI_PAGES_TO_SIZE(Pages)  ((Pages) << EFI_PAGE_SHIFT)
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [7060, 7077] <code>EFI_PAGES_TO_SIZE<span><pre>EFI_PAGES_TO_SIZE</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [7084, 7115] <code>  ((Pages) << EFI_PAGE_SHIFT)<span><pre>  ((Pages) << EFI_PAGE_SHIFT)
+</pre></span></code></summary>
+</details>
+</details>
+<details class="leaf"><summary>CCode.Spacing [7115, 7173] <code><span><pre>
+///
+/// PE32+ Machine type for IA32 UEFI images.
+///
+</pre></span></code></summary>
+</details>
+<details><summary>CCode.DefineConstant [7173, 7223] <code>#define EFI_IMAGE_MACHINE_IA32            0x014C<span><pre>#define EFI_IMAGE_MACHINE_IA32            0x014C
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [7181, 7203] <code>EFI_IMAGE_MACHINE_IA32<span><pre>EFI_IMAGE_MACHINE_IA32</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [7215, 7223] <code>0x014C<span><pre>0x014C
+</pre></span></code></summary>
+</details>
+</details>
+<details class="leaf"><summary>CCode.Spacing [7223, 7281] <code><span><pre>
+///
+/// PE32+ Machine type for IA64 UEFI images.
+///
+</pre></span></code></summary>
+</details>
+<details><summary>CCode.DefineConstant [7281, 7331] <code>#define EFI_IMAGE_MACHINE_IA64            0x0200<span><pre>#define EFI_IMAGE_MACHINE_IA64            0x0200
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [7289, 7311] <code>EFI_IMAGE_MACHINE_IA64<span><pre>EFI_IMAGE_MACHINE_IA64</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [7323, 7331] <code>0x0200<span><pre>0x0200
+</pre></span></code></summary>
+</details>
+</details>
+<details class="leaf"><summary>CCode.Spacing [7331, 7388] <code><span><pre>
+///
+/// PE32+ Machine type for EBC UEFI images.
+///
+</pre></span></code></summary>
+</details>
+<details><summary>CCode.DefineConstant [7388, 7438] <code>#define EFI_IMAGE_MACHINE_EBC             0x0EBC<span><pre>#define EFI_IMAGE_MACHINE_EBC             0x0EBC
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [7396, 7417] <code>EFI_IMAGE_MACHINE_EBC<span><pre>EFI_IMAGE_MACHINE_EBC</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [7430, 7438] <code>0x0EBC<span><pre>0x0EBC
+</pre></span></code></summary>
+</details>
+</details>
+<details class="leaf"><summary>CCode.Spacing [7438, 7495] <code><span><pre>
+///
+/// PE32+ Machine type for X64 UEFI images.
+///
+</pre></span></code></summary>
+</details>
+<details><summary>CCode.DefineConstant [7495, 7545] <code>#define EFI_IMAGE_MACHINE_X64             0x8664<span><pre>#define EFI_IMAGE_MACHINE_X64             0x8664
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [7503, 7524] <code>EFI_IMAGE_MACHINE_X64<span><pre>EFI_IMAGE_MACHINE_X64</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [7537, 7545] <code>0x8664<span><pre>0x8664
+</pre></span></code></summary>
+</details>
+</details>
+<details class="leaf"><summary>CCode.Spacing [7545, 7624] <code><span><pre>
+///
+/// PE32+ Machine type for ARM mixed ARM and Thumb/Thumb2 images.
+///
+</pre></span></code></summary>
+</details>
+<details><summary>CCode.DefineConstant [7624, 7674] <code>#define EFI_IMAGE_MACHINE_ARMTHUMB_MIXED  0x01C2<span><pre>#define EFI_IMAGE_MACHINE_ARMTHUMB_MIXED  0x01C2
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [7632, 7664] <code>EFI_IMAGE_MACHINE_ARMTHUMB_MIXED<span><pre>EFI_IMAGE_MACHINE_ARMTHUMB_MIXED</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [7666, 7674] <code>0x01C2<span><pre>0x01C2
+</pre></span></code></summary>
+</details>
+</details>
+<details class="leaf"><summary>CCode.Spacing [7674, 7734] <code><span><pre>
+///
+/// PE32+ Machine type for AARCH64 A64 images.
+///
+</pre></span></code></summary>
+</details>
+<details><summary>CCode.DefineConstant [7734, 7777] <code>#define EFI_IMAGE_MACHINE_AARCH64  0xAA64<span><pre>#define EFI_IMAGE_MACHINE_AARCH64  0xAA64
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [7742, 7767] <code>EFI_IMAGE_MACHINE_AARCH64<span><pre>EFI_IMAGE_MACHINE_AARCH64</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [7769, 7777] <code>0xAA64<span><pre>0xAA64
+</pre></span></code></summary>
+</details>
+</details>
+</details>
+</details>
+
+</body>
+</html>
+    
