@@ -43,7 +43,7 @@ details.leaf summary::-webkit-details-marker {
 </style>
 </head>
 <body>
-    <details><summary>CCode [0, 7777] <code>/** @file<span><pre>/** @file
+    <details><summary>CCode [0, 9375] <code>/** @file<span><pre>/** @file
   Defines data types and constants introduced in UEFI.
 
 Copyright (c) 2006 - 2017, Intel Corporation. All rights reserved.<BR>
@@ -290,8 +290,55 @@ typedef union {
 /// PE32+ Machine type for AARCH64 A64 images.
 ///
 #define EFI_IMAGE_MACHINE_AARCH64  0xAA64
+
+
+#if   defined (MDE_CPU_IA32)
+
+#define EFI_IMAGE_MACHINE_TYPE_SUPPORTED(Machine)   (((Machine) == EFI_IMAGE_MACHINE_IA32) || ((Machine) == EFI_IMAGE_MACHINE_EBC))
+
+#define EFI_IMAGE_MACHINE_CROSS_TYPE_SUPPORTED(Machine) ((Machine) == EFI_IMAGE_MACHINE_X64) 
+
+#elif defined (MDE_CPU_IPF)
+
+#define EFI_IMAGE_MACHINE_TYPE_SUPPORTED(Machine)   (((Machine) == EFI_IMAGE_MACHINE_IA64) || ((Machine) == EFI_IMAGE_MACHINE_EBC))
+
+#define EFI_IMAGE_MACHINE_CROSS_TYPE_SUPPORTED(Machine) (FALSE) 
+
+#elif defined (MDE_CPU_X64)
+
+#define EFI_IMAGE_MACHINE_TYPE_SUPPORTED(Machine)   (((Machine) == EFI_IMAGE_MACHINE_X64) || ((Machine) == EFI_IMAGE_MACHINE_EBC))
+
+#define EFI_IMAGE_MACHINE_CROSS_TYPE_SUPPORTED(Machine) ((Machine) == EFI_IMAGE_MACHINE_IA32) 
+
+#elif defined (MDE_CPU_ARM)
+
+#define EFI_IMAGE_MACHINE_TYPE_SUPPORTED(Machine) ((Machine) == EFI_IMAGE_MACHINE_ARMTHUMB_MIXED)
+
+#define EFI_IMAGE_MACHINE_CROSS_TYPE_SUPPORTED(Machine) (FALSE)
+
+#elif defined (MDE_CPU_AARCH64)
+
+#define EFI_IMAGE_MACHINE_TYPE_SUPPORTED(Machine)   (((Machine) == EFI_IMAGE_MACHINE_AARCH64) || ((Machine) == EFI_IMAGE_MACHINE_EBC))
+
+#define EFI_IMAGE_MACHINE_CROSS_TYPE_SUPPORTED(Machine) (FALSE)
+
+#elif defined (MDE_CPU_EBC)
+
+///
+/// This is just to make sure you can cross compile with the EBC compiler.
+/// It does not make sense to have a PE loader coded in EBC. 
+///
+#define EFI_IMAGE_MACHINE_TYPE_SUPPORTED(Machine) ((Machine) == EFI_IMAGE_MACHINE_EBC)
+
+#define EFI_IMAGE_MACHINE_CROSS_TYPE_SUPPORTED(Machine) (FALSE) 
+
+#else
+#error Unknown Processor Type
+#endif
+
+#endif
 </pre></span></code></summary>
-<details><summary>CCode.Unit [0, 7777] <code>/** @file<span><pre>/** @file
+<details><summary>CCode.Unit [0, 9375] <code>/** @file<span><pre>/** @file
   Defines data types and constants introduced in UEFI.
 
 Copyright (c) 2006 - 2017, Intel Corporation. All rights reserved.<BR>
@@ -538,6 +585,53 @@ typedef union {
 /// PE32+ Machine type for AARCH64 A64 images.
 ///
 #define EFI_IMAGE_MACHINE_AARCH64  0xAA64
+
+
+#if   defined (MDE_CPU_IA32)
+
+#define EFI_IMAGE_MACHINE_TYPE_SUPPORTED(Machine)   (((Machine) == EFI_IMAGE_MACHINE_IA32) || ((Machine) == EFI_IMAGE_MACHINE_EBC))
+
+#define EFI_IMAGE_MACHINE_CROSS_TYPE_SUPPORTED(Machine) ((Machine) == EFI_IMAGE_MACHINE_X64) 
+
+#elif defined (MDE_CPU_IPF)
+
+#define EFI_IMAGE_MACHINE_TYPE_SUPPORTED(Machine)   (((Machine) == EFI_IMAGE_MACHINE_IA64) || ((Machine) == EFI_IMAGE_MACHINE_EBC))
+
+#define EFI_IMAGE_MACHINE_CROSS_TYPE_SUPPORTED(Machine) (FALSE) 
+
+#elif defined (MDE_CPU_X64)
+
+#define EFI_IMAGE_MACHINE_TYPE_SUPPORTED(Machine)   (((Machine) == EFI_IMAGE_MACHINE_X64) || ((Machine) == EFI_IMAGE_MACHINE_EBC))
+
+#define EFI_IMAGE_MACHINE_CROSS_TYPE_SUPPORTED(Machine) ((Machine) == EFI_IMAGE_MACHINE_IA32) 
+
+#elif defined (MDE_CPU_ARM)
+
+#define EFI_IMAGE_MACHINE_TYPE_SUPPORTED(Machine) ((Machine) == EFI_IMAGE_MACHINE_ARMTHUMB_MIXED)
+
+#define EFI_IMAGE_MACHINE_CROSS_TYPE_SUPPORTED(Machine) (FALSE)
+
+#elif defined (MDE_CPU_AARCH64)
+
+#define EFI_IMAGE_MACHINE_TYPE_SUPPORTED(Machine)   (((Machine) == EFI_IMAGE_MACHINE_AARCH64) || ((Machine) == EFI_IMAGE_MACHINE_EBC))
+
+#define EFI_IMAGE_MACHINE_CROSS_TYPE_SUPPORTED(Machine) (FALSE)
+
+#elif defined (MDE_CPU_EBC)
+
+///
+/// This is just to make sure you can cross compile with the EBC compiler.
+/// It does not make sense to have a PE loader coded in EBC. 
+///
+#define EFI_IMAGE_MACHINE_TYPE_SUPPORTED(Machine) ((Machine) == EFI_IMAGE_MACHINE_EBC)
+
+#define EFI_IMAGE_MACHINE_CROSS_TYPE_SUPPORTED(Machine) (FALSE) 
+
+#else
+#error Unknown Processor Type
+#endif
+
+#endif
 </pre></span></code></summary>
 <details class="leaf"><summary>CCode.Spacing [0, 704] <code>/** @file<span><pre>/** @file
   Defines data types and constants introduced in UEFI.
@@ -557,11 +651,26 @@ WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
 
 </pre></span></code></summary>
 </details>
-<details class="leaf"><summary>CCode.UnrecognisedDecl [704, 958] <code>#ifndef __UEFI_BASETYPE_H__<span><pre>#ifndef __UEFI_BASETYPE_H__
-#define __UEFI_BASETYPE_H__
+<details><summary>CCode.PreprocessorOnlyLine [704, 733] <code>#ifndef __UEFI_BASETYPE_H__<span><pre>#ifndef __UEFI_BASETYPE_H__
+</pre></span></code></summary>
+<details><summary>CCode.PIf [704, 733] <code>#ifndef __UEFI_BASETYPE_H__<span><pre>#ifndef __UEFI_BASETYPE_H__
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.UntilEOL [707, 733] <code>ndef __UEFI_BASETYPE_H__<span><pre>ndef __UEFI_BASETYPE_H__
+</pre></span></code></summary>
+</details>
+</details>
+</details>
+<details><summary>CCode.DefineConstant [733, 783] <code>#define __UEFI_BASETYPE_H__<span><pre>#define __UEFI_BASETYPE_H__
 
 #include <Base.h>
-
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [741, 760] <code>__UEFI_BASETYPE_H__<span><pre>__UEFI_BASETYPE_H__</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [764, 783] <code>#include <Base.h><span><pre>#include <Base.h>
+</pre></span></code></summary>
+</details>
+</details>
+<details class="leaf"><summary>CCode.Spacing [783, 915] <code><span><pre>
 //
 // Basic data type definitions introduced in UEFI.
 //
@@ -569,7 +678,15 @@ WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
 ///
 /// 128-bit buffer containing a unique identifier value.
 ///
-typedef GUID                      EFI_GUID;</pre></span></code></summary>
+</pre></span></code></summary>
+</details>
+<details><summary>CCode.AliasTypedef [915, 958] <code>typedef GUID                      EFI_GUID;<span><pre>typedef GUID                      EFI_GUID;</pre></span></code></summary>
+<details><summary>CCode.Type [923, 927] <code>GUID<span><pre>GUID</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [923, 927] <code>GUID<span><pre>GUID</pre></span></code></summary>
+</details>
+</details>
+<details class="leaf"><summary>CCode.Identifier [949, 957] <code>EFI_GUID<span><pre>EFI_GUID</pre></span></code></summary>
+</details>
 </details>
 <details class="leaf"><summary>CCode.Spacing [958, 1011] <code><span><pre>
 ///
@@ -694,30 +811,148 @@ typedef GUID                      EFI_GUID;</pre></span></code></summary>
 ///
 </pre></span></code></summary>
 </details>
-<details class="leaf"><summary>CCode.UnrecognisedDecl [1889, 1922] <code>typedef struct {<span><pre>typedef struct {
-  UINT16  Year;</pre></span></code></summary>
+<details><summary>CCode.AliasTypedef [1889, 2123] <code>typedef struct {<span><pre>typedef struct {
+  UINT16  Year;
+  UINT8   Month;
+  UINT8   Day;
+  UINT8   Hour;
+  UINT8   Minute;
+  UINT8   Second;
+  UINT8   Pad1;
+  UINT32  Nanosecond;
+  INT16   TimeZone;
+  UINT8   Daylight;
+  UINT8   Pad2;
+} EFI_TIME;</pre></span></code></summary>
+<details><summary>CCode.Type [1897, 2113] <code>struct {<span><pre>struct {
+  UINT16  Year;
+  UINT8   Month;
+  UINT8   Day;
+  UINT8   Hour;
+  UINT8   Minute;
+  UINT8   Second;
+  UINT8   Pad1;
+  UINT32  Nanosecond;
+  INT16   TimeZone;
+  UINT8   Daylight;
+  UINT8   Pad2;
+}</pre></span></code></summary>
+<details><summary>CCode.StructType [1897, 2113] <code>struct {<span><pre>struct {
+  UINT16  Year;
+  UINT8   Month;
+  UINT8   Day;
+  UINT8   Hour;
+  UINT8   Minute;
+  UINT8   Second;
+  UINT8   Pad1;
+  UINT32  Nanosecond;
+  INT16   TimeZone;
+  UINT8   Daylight;
+  UINT8   Pad2;
+}</pre></span></code></summary>
+<details><summary>CCode.FieldDecl [1909, 1926] <code>UINT16  Year;<span><pre>UINT16  Year;
+  </pre></span></code></summary>
+<details><summary>CCode.Type [1909, 1917] <code>UINT16  <span><pre>UINT16  </pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [1909, 1915] <code>UINT16<span><pre>UINT16</pre></span></code></summary>
 </details>
-<details class="leaf"><summary>CCode.UnrecognisedDecl [1926, 1940] <code>UINT8   Month;<span><pre>UINT8   Month;</pre></span></code></summary>
 </details>
-<details class="leaf"><summary>CCode.UnrecognisedDecl [1944, 1956] <code>UINT8   Day;<span><pre>UINT8   Day;</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [1917, 1921] <code>Year<span><pre>Year</pre></span></code></summary>
 </details>
-<details class="leaf"><summary>CCode.UnrecognisedDecl [1960, 1973] <code>UINT8   Hour;<span><pre>UINT8   Hour;</pre></span></code></summary>
 </details>
-<details class="leaf"><summary>CCode.UnrecognisedDecl [1977, 1992] <code>UINT8   Minute;<span><pre>UINT8   Minute;</pre></span></code></summary>
+<details><summary>CCode.FieldDecl [1926, 1944] <code>UINT8   Month;<span><pre>UINT8   Month;
+  </pre></span></code></summary>
+<details><summary>CCode.Type [1926, 1934] <code>UINT8   <span><pre>UINT8   </pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [1926, 1931] <code>UINT8<span><pre>UINT8</pre></span></code></summary>
 </details>
-<details class="leaf"><summary>CCode.UnrecognisedDecl [1996, 2011] <code>UINT8   Second;<span><pre>UINT8   Second;</pre></span></code></summary>
 </details>
-<details class="leaf"><summary>CCode.UnrecognisedDecl [2015, 2028] <code>UINT8   Pad1;<span><pre>UINT8   Pad1;</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [1934, 1939] <code>Month<span><pre>Month</pre></span></code></summary>
 </details>
-<details class="leaf"><summary>CCode.UnrecognisedDecl [2032, 2051] <code>UINT32  Nanosecond;<span><pre>UINT32  Nanosecond;</pre></span></code></summary>
 </details>
-<details class="leaf"><summary>CCode.UnrecognisedDecl [2055, 2072] <code>INT16   TimeZone;<span><pre>INT16   TimeZone;</pre></span></code></summary>
+<details><summary>CCode.FieldDecl [1944, 1960] <code>UINT8   Day;<span><pre>UINT8   Day;
+  </pre></span></code></summary>
+<details><summary>CCode.Type [1944, 1952] <code>UINT8   <span><pre>UINT8   </pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [1944, 1949] <code>UINT8<span><pre>UINT8</pre></span></code></summary>
 </details>
-<details class="leaf"><summary>CCode.UnrecognisedDecl [2076, 2093] <code>UINT8   Daylight;<span><pre>UINT8   Daylight;</pre></span></code></summary>
 </details>
-<details class="leaf"><summary>CCode.UnrecognisedDecl [2097, 2110] <code>UINT8   Pad2;<span><pre>UINT8   Pad2;</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [1952, 1955] <code>Day<span><pre>Day</pre></span></code></summary>
 </details>
-<details class="leaf"><summary>CCode.UnrecognisedDecl [2112, 2123] <code>} EFI_TIME;<span><pre>} EFI_TIME;</pre></span></code></summary>
+</details>
+<details><summary>CCode.FieldDecl [1960, 1977] <code>UINT8   Hour;<span><pre>UINT8   Hour;
+  </pre></span></code></summary>
+<details><summary>CCode.Type [1960, 1968] <code>UINT8   <span><pre>UINT8   </pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [1960, 1965] <code>UINT8<span><pre>UINT8</pre></span></code></summary>
+</details>
+</details>
+<details class="leaf"><summary>CCode.Identifier [1968, 1972] <code>Hour<span><pre>Hour</pre></span></code></summary>
+</details>
+</details>
+<details><summary>CCode.FieldDecl [1977, 1996] <code>UINT8   Minute;<span><pre>UINT8   Minute;
+  </pre></span></code></summary>
+<details><summary>CCode.Type [1977, 1985] <code>UINT8   <span><pre>UINT8   </pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [1977, 1982] <code>UINT8<span><pre>UINT8</pre></span></code></summary>
+</details>
+</details>
+<details class="leaf"><summary>CCode.Identifier [1985, 1991] <code>Minute<span><pre>Minute</pre></span></code></summary>
+</details>
+</details>
+<details><summary>CCode.FieldDecl [1996, 2015] <code>UINT8   Second;<span><pre>UINT8   Second;
+  </pre></span></code></summary>
+<details><summary>CCode.Type [1996, 2004] <code>UINT8   <span><pre>UINT8   </pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [1996, 2001] <code>UINT8<span><pre>UINT8</pre></span></code></summary>
+</details>
+</details>
+<details class="leaf"><summary>CCode.Identifier [2004, 2010] <code>Second<span><pre>Second</pre></span></code></summary>
+</details>
+</details>
+<details><summary>CCode.FieldDecl [2015, 2032] <code>UINT8   Pad1;<span><pre>UINT8   Pad1;
+  </pre></span></code></summary>
+<details><summary>CCode.Type [2015, 2023] <code>UINT8   <span><pre>UINT8   </pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [2015, 2020] <code>UINT8<span><pre>UINT8</pre></span></code></summary>
+</details>
+</details>
+<details class="leaf"><summary>CCode.Identifier [2023, 2027] <code>Pad1<span><pre>Pad1</pre></span></code></summary>
+</details>
+</details>
+<details><summary>CCode.FieldDecl [2032, 2055] <code>UINT32  Nanosecond;<span><pre>UINT32  Nanosecond;
+  </pre></span></code></summary>
+<details><summary>CCode.Type [2032, 2040] <code>UINT32  <span><pre>UINT32  </pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [2032, 2038] <code>UINT32<span><pre>UINT32</pre></span></code></summary>
+</details>
+</details>
+<details class="leaf"><summary>CCode.Identifier [2040, 2050] <code>Nanosecond<span><pre>Nanosecond</pre></span></code></summary>
+</details>
+</details>
+<details><summary>CCode.FieldDecl [2055, 2076] <code>INT16   TimeZone;<span><pre>INT16   TimeZone;
+  </pre></span></code></summary>
+<details><summary>CCode.Type [2055, 2063] <code>INT16   <span><pre>INT16   </pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [2055, 2060] <code>INT16<span><pre>INT16</pre></span></code></summary>
+</details>
+</details>
+<details class="leaf"><summary>CCode.Identifier [2063, 2071] <code>TimeZone<span><pre>TimeZone</pre></span></code></summary>
+</details>
+</details>
+<details><summary>CCode.FieldDecl [2076, 2097] <code>UINT8   Daylight;<span><pre>UINT8   Daylight;
+  </pre></span></code></summary>
+<details><summary>CCode.Type [2076, 2084] <code>UINT8   <span><pre>UINT8   </pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [2076, 2081] <code>UINT8<span><pre>UINT8</pre></span></code></summary>
+</details>
+</details>
+<details class="leaf"><summary>CCode.Identifier [2084, 2092] <code>Daylight<span><pre>Daylight</pre></span></code></summary>
+</details>
+</details>
+<details><summary>CCode.FieldDecl [2097, 2112] <code>UINT8   Pad2;<span><pre>UINT8   Pad2;
+</pre></span></code></summary>
+<details><summary>CCode.Type [2097, 2105] <code>UINT8   <span><pre>UINT8   </pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [2097, 2102] <code>UINT8<span><pre>UINT8</pre></span></code></summary>
+</details>
+</details>
+<details class="leaf"><summary>CCode.Identifier [2105, 2109] <code>Pad2<span><pre>Pad2</pre></span></code></summary>
+</details>
+</details>
+</details>
+</details>
+<details class="leaf"><summary>CCode.Identifier [2114, 2122] <code>EFI_TIME<span><pre>EFI_TIME</pre></span></code></summary>
+</details>
 </details>
 <details class="leaf"><summary>CCode.Spacing [2123, 2194] <code><span><pre>
 
@@ -757,10 +992,32 @@ typedef GUID                      EFI_GUID;</pre></span></code></summary>
 ///
 </pre></span></code></summary>
 </details>
-<details class="leaf"><summary>CCode.UnrecognisedDecl [2425, 2460] <code>typedef struct {<span><pre>typedef struct {
-  UINT8 Addr[32];</pre></span></code></summary>
+<details><summary>CCode.AliasTypedef [2425, 2480] <code>typedef struct {<span><pre>typedef struct {
+  UINT8 Addr[32];
+} EFI_MAC_ADDRESS;</pre></span></code></summary>
+<details><summary>CCode.Type [2433, 2463] <code>struct {<span><pre>struct {
+  UINT8 Addr[32];
+}</pre></span></code></summary>
+<details><summary>CCode.StructType [2433, 2463] <code>struct {<span><pre>struct {
+  UINT8 Addr[32];
+}</pre></span></code></summary>
+<details><summary>CCode.FieldDecl [2445, 2462] <code>UINT8 Addr[32];<span><pre>UINT8 Addr[32];
+</pre></span></code></summary>
+<details><summary>CCode.Type [2445, 2451] <code>UINT8 <span><pre>UINT8 </pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [2445, 2450] <code>UINT8<span><pre>UINT8</pre></span></code></summary>
 </details>
-<details class="leaf"><summary>CCode.UnrecognisedDecl [2462, 2480] <code>} EFI_MAC_ADDRESS;<span><pre>} EFI_MAC_ADDRESS;</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.Identifier [2451, 2455] <code>Addr<span><pre>Addr</pre></span></code></summary>
+</details>
+<details><summary>CCode.ArrayPostfix [2455, 2459] <code>[32]<span><pre>[32]</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Number [2456, 2458] <code>32<span><pre>32</pre></span></code></summary>
+</details>
+</details>
+</details>
+</details>
+</details>
+<details class="leaf"><summary>CCode.Identifier [2464, 2479] <code>EFI_MAC_ADDRESS<span><pre>EFI_MAC_ADDRESS</pre></span></code></summary>
+</details>
 </details>
 <details class="leaf"><summary>CCode.Spacing [2480, 2592] <code><span><pre>
 
@@ -770,14 +1027,56 @@ typedef GUID                      EFI_GUID;</pre></span></code></summary>
 ///
 </pre></span></code></summary>
 </details>
-<details class="leaf"><summary>CCode.UnrecognisedDecl [2592, 2637] <code>typedef union {<span><pre>typedef union {
-  UINT32            Addr[4];</pre></span></code></summary>
+<details><summary>CCode.AliasTypedef [2592, 2706] <code>typedef union {<span><pre>typedef union {
+  UINT32            Addr[4];
+  EFI_IPv4_ADDRESS  v4;
+  EFI_IPv6_ADDRESS  v6;
+} EFI_IP_ADDRESS;</pre></span></code></summary>
+<details><summary>CCode.Type [2600, 2690] <code>union {<span><pre>union {
+  UINT32            Addr[4];
+  EFI_IPv4_ADDRESS  v4;
+  EFI_IPv6_ADDRESS  v6;
+}</pre></span></code></summary>
+<details><summary>CCode.UnionType [2600, 2690] <code>union {<span><pre>union {
+  UINT32            Addr[4];
+  EFI_IPv4_ADDRESS  v4;
+  EFI_IPv6_ADDRESS  v6;
+}</pre></span></code></summary>
+<details><summary>CCode.FieldDecl [2611, 2641] <code>UINT32            Addr[4];<span><pre>UINT32            Addr[4];
+  </pre></span></code></summary>
+<details><summary>CCode.Type [2611, 2629] <code>UINT32            <span><pre>UINT32            </pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [2611, 2617] <code>UINT32<span><pre>UINT32</pre></span></code></summary>
 </details>
-<details class="leaf"><summary>CCode.UnrecognisedDecl [2641, 2662] <code>EFI_IPv4_ADDRESS  v4;<span><pre>EFI_IPv4_ADDRESS  v4;</pre></span></code></summary>
 </details>
-<details class="leaf"><summary>CCode.UnrecognisedDecl [2666, 2687] <code>EFI_IPv6_ADDRESS  v6;<span><pre>EFI_IPv6_ADDRESS  v6;</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [2629, 2633] <code>Addr<span><pre>Addr</pre></span></code></summary>
 </details>
-<details class="leaf"><summary>CCode.UnrecognisedDecl [2689, 2706] <code>} EFI_IP_ADDRESS;<span><pre>} EFI_IP_ADDRESS;</pre></span></code></summary>
+<details><summary>CCode.ArrayPostfix [2633, 2636] <code>[4]<span><pre>[4]</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Number [2634, 2635] <code>4<span><pre>4</pre></span></code></summary>
+</details>
+</details>
+</details>
+<details><summary>CCode.FieldDecl [2641, 2666] <code>EFI_IPv4_ADDRESS  v4;<span><pre>EFI_IPv4_ADDRESS  v4;
+  </pre></span></code></summary>
+<details><summary>CCode.Type [2641, 2659] <code>EFI_IPv4_ADDRESS  <span><pre>EFI_IPv4_ADDRESS  </pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [2641, 2657] <code>EFI_IPv4_ADDRESS<span><pre>EFI_IPv4_ADDRESS</pre></span></code></summary>
+</details>
+</details>
+<details class="leaf"><summary>CCode.Identifier [2659, 2661] <code>v4<span><pre>v4</pre></span></code></summary>
+</details>
+</details>
+<details><summary>CCode.FieldDecl [2666, 2689] <code>EFI_IPv6_ADDRESS  v6;<span><pre>EFI_IPv6_ADDRESS  v6;
+</pre></span></code></summary>
+<details><summary>CCode.Type [2666, 2684] <code>EFI_IPv6_ADDRESS  <span><pre>EFI_IPv6_ADDRESS  </pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [2666, 2682] <code>EFI_IPv6_ADDRESS<span><pre>EFI_IPv6_ADDRESS</pre></span></code></summary>
+</details>
+</details>
+<details class="leaf"><summary>CCode.Identifier [2684, 2686] <code>v6<span><pre>v6</pre></span></code></summary>
+</details>
+</details>
+</details>
+</details>
+<details class="leaf"><summary>CCode.Identifier [2691, 2705] <code>EFI_IP_ADDRESS<span><pre>EFI_IP_ADDRESS</pre></span></code></summary>
+</details>
 </details>
 <details class="leaf"><summary>CCode.Spacing [2706, 2757] <code><span><pre>
 
@@ -1349,6 +1648,190 @@ typedef GUID                      EFI_GUID;</pre></span></code></summary>
 <details class="leaf"><summary>CCode.Identifier [7742, 7767] <code>EFI_IMAGE_MACHINE_AARCH64<span><pre>EFI_IMAGE_MACHINE_AARCH64</pre></span></code></summary>
 </details>
 <details class="leaf"><summary>CCode.UntilEOL [7769, 7777] <code>0xAA64<span><pre>0xAA64
+</pre></span></code></summary>
+</details>
+</details>
+<details><summary>CCode.PreprocessorOnlyLine [7781, 7811] <code>#if   defined (MDE_CPU_IA32)<span><pre>#if   defined (MDE_CPU_IA32)
+</pre></span></code></summary>
+<details><summary>CCode.PIf [7781, 7811] <code>#if   defined (MDE_CPU_IA32)<span><pre>#if   defined (MDE_CPU_IA32)
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.UntilEOL [7784, 7811] <code>   defined (MDE_CPU_IA32)<span><pre>   defined (MDE_CPU_IA32)
+</pre></span></code></summary>
+</details>
+</details>
+</details>
+<details><summary>CCode.DefineMacro [7813, 7946] <code>#define EFI_IMAGE_MACHINE_TYPE_SUPPORTED(Machine)   (((Machine) == EFI_IMAGE_MACHINE_IA32) || ((Machine) == EFI_IMAGE_MACHINE_EBC))<span><pre>#define EFI_IMAGE_MACHINE_TYPE_SUPPORTED(Machine)   (((Machine) == EFI_IMAGE_MACHINE_IA32) || ((Machine) == EFI_IMAGE_MACHINE_EBC))
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [7821, 7853] <code>EFI_IMAGE_MACHINE_TYPE_SUPPORTED<span><pre>EFI_IMAGE_MACHINE_TYPE_SUPPORTED</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [7862, 7946] <code>   (((Machine) == EFI_IMAGE_MACHINE_IA32) || ((Machine) == EFI_IMAGE_MACHINE_EBC))<span><pre>   (((Machine) == EFI_IMAGE_MACHINE_IA32) || ((Machine) == EFI_IMAGE_MACHINE_EBC))
+</pre></span></code></summary>
+</details>
+</details>
+<details><summary>CCode.DefineMacro [7948, 8043] <code>#define EFI_IMAGE_MACHINE_CROSS_TYPE_SUPPORTED(Machine) ((Machine) == EFI_IMAGE_MACHINE_X64) <span><pre>#define EFI_IMAGE_MACHINE_CROSS_TYPE_SUPPORTED(Machine) ((Machine) == EFI_IMAGE_MACHINE_X64) 
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [7956, 7994] <code>EFI_IMAGE_MACHINE_CROSS_TYPE_SUPPORTED<span><pre>EFI_IMAGE_MACHINE_CROSS_TYPE_SUPPORTED</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [8003, 8043] <code> ((Machine) == EFI_IMAGE_MACHINE_X64) <span><pre> ((Machine) == EFI_IMAGE_MACHINE_X64) 
+</pre></span></code></summary>
+</details>
+</details>
+<details><summary>CCode.PreprocessorOnlyLine [8045, 8074] <code>#elif defined (MDE_CPU_IPF)<span><pre>#elif defined (MDE_CPU_IPF)
+</pre></span></code></summary>
+<details><summary>CCode.PElif [8045, 8074] <code>#elif defined (MDE_CPU_IPF)<span><pre>#elif defined (MDE_CPU_IPF)
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.UntilEOL [8050, 8074] <code> defined (MDE_CPU_IPF)<span><pre> defined (MDE_CPU_IPF)
+</pre></span></code></summary>
+</details>
+</details>
+</details>
+<details><summary>CCode.DefineMacro [8076, 8209] <code>#define EFI_IMAGE_MACHINE_TYPE_SUPPORTED(Machine)   (((Machine) == EFI_IMAGE_MACHINE_IA64) || ((Machine) == EFI_IMAGE_MACHINE_EBC))<span><pre>#define EFI_IMAGE_MACHINE_TYPE_SUPPORTED(Machine)   (((Machine) == EFI_IMAGE_MACHINE_IA64) || ((Machine) == EFI_IMAGE_MACHINE_EBC))
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [8084, 8116] <code>EFI_IMAGE_MACHINE_TYPE_SUPPORTED<span><pre>EFI_IMAGE_MACHINE_TYPE_SUPPORTED</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [8125, 8209] <code>   (((Machine) == EFI_IMAGE_MACHINE_IA64) || ((Machine) == EFI_IMAGE_MACHINE_EBC))<span><pre>   (((Machine) == EFI_IMAGE_MACHINE_IA64) || ((Machine) == EFI_IMAGE_MACHINE_EBC))
+</pre></span></code></summary>
+</details>
+</details>
+<details><summary>CCode.DefineMacro [8211, 8277] <code>#define EFI_IMAGE_MACHINE_CROSS_TYPE_SUPPORTED(Machine) (FALSE) <span><pre>#define EFI_IMAGE_MACHINE_CROSS_TYPE_SUPPORTED(Machine) (FALSE) 
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [8219, 8257] <code>EFI_IMAGE_MACHINE_CROSS_TYPE_SUPPORTED<span><pre>EFI_IMAGE_MACHINE_CROSS_TYPE_SUPPORTED</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [8266, 8277] <code> (FALSE) <span><pre> (FALSE) 
+</pre></span></code></summary>
+</details>
+</details>
+<details><summary>CCode.PreprocessorOnlyLine [8279, 8308] <code>#elif defined (MDE_CPU_X64)<span><pre>#elif defined (MDE_CPU_X64)
+</pre></span></code></summary>
+<details><summary>CCode.PElif [8279, 8308] <code>#elif defined (MDE_CPU_X64)<span><pre>#elif defined (MDE_CPU_X64)
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.UntilEOL [8284, 8308] <code> defined (MDE_CPU_X64)<span><pre> defined (MDE_CPU_X64)
+</pre></span></code></summary>
+</details>
+</details>
+</details>
+<details><summary>CCode.DefineMacro [8310, 8442] <code>#define EFI_IMAGE_MACHINE_TYPE_SUPPORTED(Machine)   (((Machine) == EFI_IMAGE_MACHINE_X64) || ((Machine) == EFI_IMAGE_MACHINE_EBC))<span><pre>#define EFI_IMAGE_MACHINE_TYPE_SUPPORTED(Machine)   (((Machine) == EFI_IMAGE_MACHINE_X64) || ((Machine) == EFI_IMAGE_MACHINE_EBC))
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [8318, 8350] <code>EFI_IMAGE_MACHINE_TYPE_SUPPORTED<span><pre>EFI_IMAGE_MACHINE_TYPE_SUPPORTED</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [8359, 8442] <code>   (((Machine) == EFI_IMAGE_MACHINE_X64) || ((Machine) == EFI_IMAGE_MACHINE_EBC))<span><pre>   (((Machine) == EFI_IMAGE_MACHINE_X64) || ((Machine) == EFI_IMAGE_MACHINE_EBC))
+</pre></span></code></summary>
+</details>
+</details>
+<details><summary>CCode.DefineMacro [8444, 8540] <code>#define EFI_IMAGE_MACHINE_CROSS_TYPE_SUPPORTED(Machine) ((Machine) == EFI_IMAGE_MACHINE_IA32) <span><pre>#define EFI_IMAGE_MACHINE_CROSS_TYPE_SUPPORTED(Machine) ((Machine) == EFI_IMAGE_MACHINE_IA32) 
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [8452, 8490] <code>EFI_IMAGE_MACHINE_CROSS_TYPE_SUPPORTED<span><pre>EFI_IMAGE_MACHINE_CROSS_TYPE_SUPPORTED</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [8499, 8540] <code> ((Machine) == EFI_IMAGE_MACHINE_IA32) <span><pre> ((Machine) == EFI_IMAGE_MACHINE_IA32) 
+</pre></span></code></summary>
+</details>
+</details>
+<details><summary>CCode.PreprocessorOnlyLine [8542, 8571] <code>#elif defined (MDE_CPU_ARM)<span><pre>#elif defined (MDE_CPU_ARM)
+</pre></span></code></summary>
+<details><summary>CCode.PElif [8542, 8571] <code>#elif defined (MDE_CPU_ARM)<span><pre>#elif defined (MDE_CPU_ARM)
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.UntilEOL [8547, 8571] <code> defined (MDE_CPU_ARM)<span><pre> defined (MDE_CPU_ARM)
+</pre></span></code></summary>
+</details>
+</details>
+</details>
+<details><summary>CCode.DefineMacro [8573, 8672] <code>#define EFI_IMAGE_MACHINE_TYPE_SUPPORTED(Machine) ((Machine) == EFI_IMAGE_MACHINE_ARMTHUMB_MIXED)<span><pre>#define EFI_IMAGE_MACHINE_TYPE_SUPPORTED(Machine) ((Machine) == EFI_IMAGE_MACHINE_ARMTHUMB_MIXED)
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [8581, 8613] <code>EFI_IMAGE_MACHINE_TYPE_SUPPORTED<span><pre>EFI_IMAGE_MACHINE_TYPE_SUPPORTED</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [8622, 8672] <code> ((Machine) == EFI_IMAGE_MACHINE_ARMTHUMB_MIXED)<span><pre> ((Machine) == EFI_IMAGE_MACHINE_ARMTHUMB_MIXED)
+</pre></span></code></summary>
+</details>
+</details>
+<details><summary>CCode.DefineMacro [8674, 8739] <code>#define EFI_IMAGE_MACHINE_CROSS_TYPE_SUPPORTED(Machine) (FALSE)<span><pre>#define EFI_IMAGE_MACHINE_CROSS_TYPE_SUPPORTED(Machine) (FALSE)
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [8682, 8720] <code>EFI_IMAGE_MACHINE_CROSS_TYPE_SUPPORTED<span><pre>EFI_IMAGE_MACHINE_CROSS_TYPE_SUPPORTED</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [8729, 8739] <code> (FALSE)<span><pre> (FALSE)
+</pre></span></code></summary>
+</details>
+</details>
+<details><summary>CCode.PreprocessorOnlyLine [8741, 8774] <code>#elif defined (MDE_CPU_AARCH64)<span><pre>#elif defined (MDE_CPU_AARCH64)
+</pre></span></code></summary>
+<details><summary>CCode.PElif [8741, 8774] <code>#elif defined (MDE_CPU_AARCH64)<span><pre>#elif defined (MDE_CPU_AARCH64)
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.UntilEOL [8746, 8774] <code> defined (MDE_CPU_AARCH64)<span><pre> defined (MDE_CPU_AARCH64)
+</pre></span></code></summary>
+</details>
+</details>
+</details>
+<details><summary>CCode.DefineMacro [8776, 8912] <code>#define EFI_IMAGE_MACHINE_TYPE_SUPPORTED(Machine)   (((Machine) == EFI_IMAGE_MACHINE_AARCH64) || ((Machine) == EFI_IMAGE_MACHINE_EBC))<span><pre>#define EFI_IMAGE_MACHINE_TYPE_SUPPORTED(Machine)   (((Machine) == EFI_IMAGE_MACHINE_AARCH64) || ((Machine) == EFI_IMAGE_MACHINE_EBC))
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [8784, 8816] <code>EFI_IMAGE_MACHINE_TYPE_SUPPORTED<span><pre>EFI_IMAGE_MACHINE_TYPE_SUPPORTED</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [8825, 8912] <code>   (((Machine) == EFI_IMAGE_MACHINE_AARCH64) || ((Machine) == EFI_IMAGE_MACHINE_EBC))<span><pre>   (((Machine) == EFI_IMAGE_MACHINE_AARCH64) || ((Machine) == EFI_IMAGE_MACHINE_EBC))
+</pre></span></code></summary>
+</details>
+</details>
+<details><summary>CCode.DefineMacro [8914, 8979] <code>#define EFI_IMAGE_MACHINE_CROSS_TYPE_SUPPORTED(Machine) (FALSE)<span><pre>#define EFI_IMAGE_MACHINE_CROSS_TYPE_SUPPORTED(Machine) (FALSE)
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [8922, 8960] <code>EFI_IMAGE_MACHINE_CROSS_TYPE_SUPPORTED<span><pre>EFI_IMAGE_MACHINE_CROSS_TYPE_SUPPORTED</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [8969, 8979] <code> (FALSE)<span><pre> (FALSE)
+</pre></span></code></summary>
+</details>
+</details>
+<details><summary>CCode.PreprocessorOnlyLine [8981, 9010] <code>#elif defined (MDE_CPU_EBC)<span><pre>#elif defined (MDE_CPU_EBC)
+</pre></span></code></summary>
+<details><summary>CCode.PElif [8981, 9010] <code>#elif defined (MDE_CPU_EBC)<span><pre>#elif defined (MDE_CPU_EBC)
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.UntilEOL [8986, 9010] <code> defined (MDE_CPU_EBC)<span><pre> defined (MDE_CPU_EBC)
+</pre></span></code></summary>
+</details>
+</details>
+</details>
+<details class="leaf"><summary>CCode.Spacing [9010, 9161] <code><span><pre>
+///
+/// This is just to make sure you can cross compile with the EBC compiler.
+/// It does not make sense to have a PE loader coded in EBC. 
+///
+</pre></span></code></summary>
+</details>
+<details><summary>CCode.DefineMacro [9161, 9249] <code>#define EFI_IMAGE_MACHINE_TYPE_SUPPORTED(Machine) ((Machine) == EFI_IMAGE_MACHINE_EBC)<span><pre>#define EFI_IMAGE_MACHINE_TYPE_SUPPORTED(Machine) ((Machine) == EFI_IMAGE_MACHINE_EBC)
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [9169, 9201] <code>EFI_IMAGE_MACHINE_TYPE_SUPPORTED<span><pre>EFI_IMAGE_MACHINE_TYPE_SUPPORTED</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [9210, 9249] <code> ((Machine) == EFI_IMAGE_MACHINE_EBC)<span><pre> ((Machine) == EFI_IMAGE_MACHINE_EBC)
+</pre></span></code></summary>
+</details>
+</details>
+<details><summary>CCode.DefineMacro [9251, 9317] <code>#define EFI_IMAGE_MACHINE_CROSS_TYPE_SUPPORTED(Machine) (FALSE) <span><pre>#define EFI_IMAGE_MACHINE_CROSS_TYPE_SUPPORTED(Machine) (FALSE) 
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.Identifier [9259, 9297] <code>EFI_IMAGE_MACHINE_CROSS_TYPE_SUPPORTED<span><pre>EFI_IMAGE_MACHINE_CROSS_TYPE_SUPPORTED</pre></span></code></summary>
+</details>
+<details class="leaf"><summary>CCode.UntilEOL [9306, 9317] <code> (FALSE) <span><pre> (FALSE) 
+</pre></span></code></summary>
+</details>
+</details>
+<details><summary>CCode.PreprocessorOnlyLine [9319, 9326] <code>#else<span><pre>#else
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.PElse [9319, 9326] <code>#else<span><pre>#else
+</pre></span></code></summary>
+</details>
+</details>
+<details><summary>CCode.PreprocessorOnlyLine [9326, 9357] <code>#error Unknown Processor Type<span><pre>#error Unknown Processor Type
+</pre></span></code></summary>
+<details><summary>CCode.PError [9326, 9357] <code>#error Unknown Processor Type<span><pre>#error Unknown Processor Type
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.UntilEOL [9332, 9357] <code> Unknown Processor Type<span><pre> Unknown Processor Type
+</pre></span></code></summary>
+</details>
+</details>
+</details>
+<details><summary>CCode.PreprocessorOnlyLine [9357, 9365] <code>#endif<span><pre>#endif
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.PEndIf [9357, 9365] <code>#endif<span><pre>#endif
+</pre></span></code></summary>
+</details>
+</details>
+<details><summary>CCode.PreprocessorOnlyLine [9367, 9375] <code>#endif<span><pre>#endif
+</pre></span></code></summary>
+<details class="leaf"><summary>CCode.PEndIf [9367, 9375] <code>#endif<span><pre>#endif
 </pre></span></code></summary>
 </details>
 </details>

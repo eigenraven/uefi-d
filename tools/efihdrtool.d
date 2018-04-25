@@ -120,9 +120,20 @@ void loadMapping(File mapFile)
 
 void processCode(GeneratedModule* dmod, string htext)
 {
+    import std.regex;
+    htext = htext.replaceAll(regex(`\\\r?\n`, "gs"), "");
     ParseTree p = CCode(htext);
     import pegged.tohtml;
     toHTML(p, File("parseresult.html", "w"));
+}
+
+ParseTree warnUnrecognisedDecl(ParseTree pt)
+{
+    string match = pt.input[pt.begin .. pt.end];
+    if(match.length < 1)
+        return pt;
+    stderr.writefln("Unrecognised code: %s", match);
+    return pt;
 }
 
 mixin(grammar(PEG_C_GRAMMAR));
@@ -130,11 +141,11 @@ enum string PEG_C_GRAMMAR = q{
 CCode:
 
     Unit <- (Spacing? (
-              GuardedBlock
-            / Include
+            / PreprocessorOnlyLine
             / DefineMacro
             / DefineConstant
             / AliasTypedef
+            / LoneDefinition
             / UnrecognisedDecl
             ))+
 
@@ -143,23 +154,41 @@ CCode:
     Comment <~ "//" (!endOfLine .)* endOfLine
              / "/*" (!"*/" .)* "*/"
 
+    PreprocessorOnlyLine <- Include / PIf / PElif / PElse / PEndIf / PError
+    PIf <- "#if" UntilEOL
+    PElif <- "#elif" UntilEOL
+    PElse <- "#else" endOfLine
+    PEndIf <- "#endif" endOfLine
+    PError <- "#error" UntilEOL
+
     Spacing <~ (:space / :endOfLine / DocComment / :Comment)*
     Identifier <~ [a-zA-Z_] [a-zA-Z0-9_]*
-    Pointer <- Type Spacing? '*'
-    Type <- Pointer / Identifier
+    Number <~ [0-9]+
+    ArrayPostfix < "[" Number? "]"
+    BitsPostfix < ":" Number
     UntilEOL <~ (!endOfLine .)* :endOfLine
 
-    GuardStart <- "#ifndef" Spacing Identifier endOfLine
-                  "#define" Spacing Identifier endOfLine
+    LoneDefinition < StructType / UnionType ";"
+    StructType <- "struct" Spacing? Identifier? Spacing? "{" Spacing? FieldDecl* Spacing? "}"
+    UnionType <- "union" Spacing? Identifier? Spacing? "{" Spacing? FieldDecl* Spacing? "}"
+    Pointer <- Type Spacing? "*"
+    Type <- StructType / UnionType / Pointer / Identifier
+    Argument < "IN"? "OUT"? Type Identifier? ArrayPostfix? "OPTIONAL"?
+    FuncPointerVar < Type "(" "EFIAPI" "*" Identifier? ")" "(" (Argument ",")* Argument? ")"
+
+    GuardStart <- "#ifndef" Spacing Identifier endOfLine "#define" Spacing Identifier endOfLine
     GuardEnd <- "#endif"
     GuardedBlock <- GuardStart Unit GuardEnd
 
-    Include <- "#include" Spacing ('<'/doublequote) ~(!doublequote !'>' .)+ ('>'/doublequote)
-    DefineMacro <- "#define" Spacing Identifier ~('(' (!')' .)* ')') UntilEOL
+    Path <- [a-zA-Z_./]+
+    Include < "#include" ("<"/doublequote) Path (">"/doublequote) endOfLine
+    DefineMacro <- "#define" Spacing Identifier ~("(" (!")" .)* ")") UntilEOL
     DefineConstant <- "#define" Spacing Identifier Spacing UntilEOL
 
-    AliasTypedef <- "typedef" Spacing Type Spacing Identifier ";"
+    AliasTypedef <- "typedef" Spacing (FuncPointerVar / Type Spacing Identifier Spacing? ArrayPostfix?) Spacing? ";"
+    FieldsBlock < FieldDecl*
+    FieldDecl < (FuncPointerVar / Type Identifier? (ArrayPostfix / BitsPostfix)?) ";"
+    
 
-
-    UnrecognisedDecl <- (!';' .)+ ';'
+    UnrecognisedDecl <- ~((!";" .)+ ";") {warnUnrecognisedDecl}
 };
